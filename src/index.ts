@@ -1,11 +1,27 @@
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
-import {appConfig} from "./appConfig";
+import * as cookieParser from 'cookie-parser';
+import * as session from 'express-session';
+import * as connectMongo from 'connect-mongo'
+import * as mongoose from "mongoose";
+
+import {appConfig, mongooseConfig, sessionConfig} from "./appConfig";
 import {personRouter} from "./routes/person";
 import {customerRouter} from "./routes/customer";
+import {userAccountRouter} from "./routes/userAccount";
 
 const app = express();
+//todo make mongoose connectin helper
+mongoose.connect(mongooseConfig.mongooseUri, { useNewUrlParser: true, useCreateIndex: true });
+
 app.use(bodyParser.json());
+app.use(cookieParser());
+const MongoStore = connectMongo(session);
+app.use(session({secret: sessionConfig.secret,
+    store: new MongoStore({mongooseConnection: mongoose.connection}),
+    resave: true,
+    saveUninitialized: true
+}));
 
 app.use((req, res, next)=>{
     console.log(`${new Date().toString()} => ${req.originalUrl}`, req.body);
@@ -13,7 +29,7 @@ app.use((req, res, next)=>{
 });
 app.use(personRouter);
 app.use(customerRouter);
-app.use(userAccount);
+app.use(userAccountRouter);
 app.use(express.static('public'));
 app.use((req, res, next)=>{
     res.status(404).send('Path doesnt exist')

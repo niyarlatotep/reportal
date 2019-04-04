@@ -20,9 +20,9 @@ const UserAccountSchema = new mongoose.Schema({
 });
 
 UserAccountSchema.virtual('password')
-    .set(async function (password) {
-       this.salt = await bcrypt.genSalt(10);
-       this.hashedPassword = await bcrypt.hash(password, this.salt);
+    .set(function (password) {
+       this.salt = bcrypt.genSaltSync(10);
+       this.hashedPassword = bcrypt.hashSync(password, this.salt);
     });
 
 UserAccountSchema.methods.checkPassword = function (password) {

@@ -1,9 +1,9 @@
 import {UserAccountModel} from "../models/userAccount";
 import * as express from 'express';
 
-const customerRouter = express.Router();
+const userAccountRouter = express.Router();
 
-customerRouter.post('/userAccount', async (req, res) => {
+userAccountRouter.post('/userAccount', async (req, res) => {
     if (!req.body){
         return res.status(400).send('Request body is missing');
     }
@@ -16,7 +16,7 @@ customerRouter.post('/userAccount', async (req, res) => {
     }
 });
 
-customerRouter.put('/userAccount', async (req, res)=>{
+userAccountRouter.put('/userAccount', async (req, res)=>{
     if(!req.query.email){
         return res.status(400).send('Missing URL parameter: email')
     }
@@ -33,7 +33,7 @@ customerRouter.put('/userAccount', async (req, res)=>{
     }
 });
 
-customerRouter.delete('/userAccount', async (req, res)=>{
+userAccountRouter.delete('/userAccount', async (req, res)=>{
     if(!req.query.userName){
         return res.status(400).send('Missing URL parameter: email')
     }
@@ -49,5 +49,5 @@ customerRouter.delete('/userAccount', async (req, res)=>{
 });
 
 export {
-    customerRouter
+    userAccountRouter
 }

@@ -4,5 +4,8 @@
     },
     "mongoose": {
         "uri": "mongodb://localhost/reportal"
+    },
+    "session": {
+        "secret" : "TheBestOfTheBestOfTheBest"
     }
 }

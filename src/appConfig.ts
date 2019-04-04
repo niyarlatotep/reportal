@@ -37,11 +37,23 @@ class MongooseConfig {
         return this._mongooseUri;
     }
 }
+class SessionConfig {
+    private _secret: string;
+
+    constructor(){
+        this._secret = config.get('session.secret');
+    }
+    get secret(){
+        return this._secret;
+    }
+}
 
 const appConfig = new AppConfig();
 const mongooseConfig = new MongooseConfig();
+const sessionConfig = new SessionConfig();
 
 export {
     appConfig,
-    mongooseConfig
+    mongooseConfig,
+    sessionConfig
 }
