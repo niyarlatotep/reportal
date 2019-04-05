@@ -9,6 +9,7 @@ import {appConfig, mongooseConfig, sessionConfig} from "./appConfig";
 import {personRouter} from "./routes/person";
 import {customerRouter} from "./routes/customer";
 import {userAccountRouter} from "./routes/userAccount";
+import * as path from "path";
 
 const app = express();
 //todo make mongoose connectin helper
@@ -30,7 +31,15 @@ app.use((req, res, next)=>{
 app.use(personRouter);
 app.use(customerRouter);
 app.use(userAccountRouter);
-app.use(express.static('public'));
+app.post('/login', function (req, res) {
+    res.end();
+});
+app.get('/loged', function (req, res) {
+    res.sendFile(path.join(__dirname, '/public/loged.html'));
+});
+
+app.use(express.static(path.join(__dirname, 'public')));
+
 app.use((req, res, next)=>{
     res.status(404).send('Path doesnt exist')
 });
