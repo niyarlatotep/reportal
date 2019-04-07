@@ -1,86 +1,55 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Reportal</title>
+  <head>
+    <meta charset="utf-8">
+    <title>Signin Template · Bootstrap</title>
+    <!-- Bootstrap core CSS -->
+	<link rel="stylesheet" href="css/bootstrap.min.css">
 
-    <link rel="stylesheet" href="vendor/css/bootstrap.min.css">
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+      }
 
-    <script rel="stylesheet" src="vendor/js/jquery-3.3.1.js"></script>
-    <script rel="stylesheet" src="vendor/js/bootstrap.bundle.min.js"></script>
-</head>
-<body>
-<header>
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+    </style>
+    <!-- Custom styles for this template -->
+    <link href="css/signin.css" rel="stylesheet">
+  </head>
+  <body class="text-center">
+  <form name="signin" class="form-signin" action="javascript:onsubmit()">
+    <img class="mb-4" src="assets/bootstrap-solid.svg" alt="" width="72" height="72">
+    <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+    <label for="inputLogin" class="sr-only">Login</label>
+    <input type="text" name="inputLogin" id="inputLogin" class="form-control" placeholder="Login" required autofocus>
+    <label for="inputPassword" class="sr-only">Password</label>
+    <input type="password" name="inputPassword" id="inputPassword" class="form-control" placeholder="Password" required>
+    <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+  </form>
+  <script>
+    function onsubmit() {
+      const formElements = document.forms.signin.elements;
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", "/login", true);
+      xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+      xhr.onload = function () {
+        if (xhr.status === 200) {
+          window.location.href = "/loged";
+        } else {
+          console.error(xhr.status)
+        }
+      };
 
-</header>
-<section class="container">
-    <nav class="navbar navbar-default" role="navigation">
-        <ul class="nav navbar-nav">
-            <li><a href="/">Главная</a></li>
-        </ul>
-        <ul class="nav navbar-nav">
-            <li><a href="/login">Войти</a> </li>
-        </ul>
-    </nav>
-
-    <h1>Регистрация и вход</h1>
-
-    <p>Введите имя пользователя и пароль</p>
-
-    <form class="form-horizontal login-form" name="login-form">
-        <div class="form-group">
-            <label for="input-username" class="col-lg-2 control-label">Имя</label>
-
-            <div class="col-lg-10">
-                <input name="username" type="text" class="form-control" id="input-username" placeholder="Имя">
-            </div>
-        </div>
-        <div class="form-group">
-            <label for="input-password" class="col-lg-2 control-label">Пароль</label>
-
-            <div class="col-lg-10">
-                <input name="username" type="password" class="form-control" id="input-password" placeholder="Пароль">
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-lg-offset-2 col-lg-10">
-                <button type="submit" class="btn btn-primary" data-loading-text="Отправляю...">Войти</button>
-                <span class="help-block error"></span>
-            </div>
-        </div>
-    </form>
-
-    <script>
-        $(document.forms['login-form']).on('submit', function () {
-            console.log('eeeeeeeeee');
-            console.log('eeeeeeeeee');
-            const form = $(this);
-
-            $('.error', form).html('');
-            $(":submit", form).button("loading");
-
-            $.ajax({
-                type: "POST",
-                url: "/login",
-                data: form.serialize(),
-                success: function (){
-                    console.log('complete');
-                    $(":submit", form).button("reset");
-                    console.log('heeere');
-                    window.location.href = "/loged";
-                },
-                error: function (jqXHR) {
-                    console.error('loooooooooooooooog');
-                    console.error('loooooooooooooooog');
-                    // const error = JSON.parse(jqXHR.responseText);
-                    // $('.error', form).html(error.message);
-                }
-            });
-           return false;
-        });
-    </script>
-
-</section>
-
+      xhr.onerror = xhr.onabort = function () {
+        console.error('some error')
+      };
+      xhr.send(JSON.stringify({name: formElements.inputLogin.value, password: formElements.inputPassword.value}));
+    };
+  </script>
 </body>
 </html>

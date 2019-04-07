@@ -10,10 +10,13 @@ import {personRouter} from "./routes/person";
 import {customerRouter} from "./routes/customer";
 import {userAccountRouter} from "./routes/userAccount";
 import * as path from "path";
+import {UserAccountModel} from "./models/userAccount";
+import {loginRouter} from "./routes/login";
 
 const app = express();
 //todo make mongoose connectin helper
 mongoose.connect(mongooseConfig.mongooseUri, { useNewUrlParser: true, useCreateIndex: true });
+
 
 app.use(bodyParser.json());
 app.use(cookieParser());
@@ -31,11 +34,12 @@ app.use((req, res, next)=>{
 app.use(personRouter);
 app.use(customerRouter);
 app.use(userAccountRouter);
-app.post('/login', function (req, res) {
-    res.end();
-});
+app.use(loginRouter);
+
+
 app.get('/loged', function (req, res) {
     res.sendFile(path.join(__dirname, '/public/loged.html'));
+    // res.sendFile(path.join(__dirname, '/public/loged.html'));
 });
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -49,4 +53,19 @@ app.use((err, req, res, next)=>{
 
 });
 
-app.listen(appConfig.port, ()=> console.log(`Server has started on ${appConfig.port}`));
+async function appInit() {
+    const Admin = await UserAccountModel.findOne({userName: 'admin'});
+    if (!Admin){
+        console.log('Admin account creating');
+        const newAdmin = new UserAccountModel({userName: 'admin', password: 'admin'});
+        await newAdmin.save();
+        console.log('Admin account created');
+        console.log('Guest account creating');
+        const guest = new UserAccountModel({userName: 'guest', password: 'guest'});
+        await guest.save();
+        console.log('Admin account created');
+    }
+    app.listen(appConfig.port, ()=> console.log(`Server has started on ${appConfig.port}`));
+}
+
+appInit();
