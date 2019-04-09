@@ -32,6 +32,13 @@ UserAccountSchema.methods.checkPassword = function (password) {
 
 const UserAccountModel = mongoose.model('UserAccount', UserAccountSchema);
 
+export interface IUserAccountDocument extends mongoose.Document{
+    userName: string,
+    password: string
+
+    checkPassword(password: string): boolean,
+}
+
 export {
     UserAccountModel
 }
