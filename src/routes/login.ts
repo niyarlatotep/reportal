@@ -7,16 +7,16 @@ loginRouter.post('/login', async (req, res) => {
     const userName = req.body.name;
     const password = req.body.password;
 
-    const currentAdmin = <IUserAccountDocument>await UserAccountModel.findOne({userName: userName});
+    const currentUserAccount = await UserAccountModel.authorize(userName, password);
 
-    if (currentAdmin){
-        console.log(currentAdmin);
-        if (currentAdmin.checkPassword(password)){
-            console.log('password correct')
-        }
-        res.end();
+    if (currentUserAccount){
+        console.log(currentUserAccount);
+        console.log('login correct');
+        req.session.user = currentUserAccount;
+        res.send();
     } else {
-        res.status(401).send();
+        console.log('login incorrect');
+        res.status(403).send();
     }
 });
 
