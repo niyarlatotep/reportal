@@ -3,11 +3,13 @@ import * as express from 'express';
 
 const reportRouter = express.Router();
 
-reportRouter.post('/report/:runId', async (req, res) => {
+reportRouter.post('/report/:projectId/:runId', async (req, res) =>{
+    console.log(req.params);
     console.log(req.params.runId);
     if (!req.body){
         return res.status(400).send('Request body is missing');
     }
+    res.end();
     // let user = {
     //     name: 'firstname lastname',
     //     email: 'email@gmail.com'

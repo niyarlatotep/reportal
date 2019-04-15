@@ -8,7 +8,7 @@ mainRouter.get('/', async (req, res, next) => {
         res.sendFile(path.join(__dirname, '../public/login.html'));
     } else {
         console.log(req.session.user);
-        res.sendFile(path.join(__dirname, '../public/loged.html'));
+        res.sendFile(path.join(__dirname, '../public/projects.html'));
     }
 });
 

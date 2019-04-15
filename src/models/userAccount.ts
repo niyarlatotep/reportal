@@ -4,7 +4,7 @@ import * as bcrypt from "bcrypt";
 import * as http from "http";
 import {Model} from "mongoose";
 
-mongoose.connect(mongooseConfig.mongooseUri, { useNewUrlParser: true });
+mongoose.connect(mongooseConfig.reportalUri, { useNewUrlParser: true });
 const UserAccountSchema = new mongoose.Schema({
     userName: {
         type: String,

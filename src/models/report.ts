@@ -1,18 +1,13 @@
 import * as mongoose from "mongoose";
 import {mongooseConfig} from "../appConfig";
 
-mongoose.connect(mongooseConfig.mongooseUri, { useNewUrlParser: true });
-const CustomerSchema = new mongoose.Schema({
-    name: String,
-    email: {
-        type: String,
-        required: true,
-        unique: true
-    }
+mongoose.connect(mongooseConfig.projectsReportsUri, { useNewUrlParser: true });
+const ReportSchema = new mongoose.Schema({
+    name: String
 });
 
-const CustomerModel = mongoose.model('123', CustomerSchema);
+const ReportModel = mongoose.model('nsms', ReportSchema);
 
 export {
-    CustomerModel
+    ReportModel
 }

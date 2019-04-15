@@ -13,10 +13,14 @@ import * as path from "path";
 import {UserAccountModel} from "./models/userAccount";
 import {loginRouter} from "./routes/login";
 import {mainRouter} from "./routes/main";
+import {reportRouter} from "./routes/report";
+import {ReportModel} from "./models/report";
+import {projectsRouter} from "./routes/projects";
+import {logoutRouter} from "./routes/logout";
 
 const app = express();
 //todo make mongoose connectin helper
-mongoose.connect(mongooseConfig.mongooseUri, { useNewUrlParser: true, useCreateIndex: true });
+mongoose.connect(mongooseConfig.reportalUri, { useNewUrlParser: true, useCreateIndex: true });
 
 
 app.use(bodyParser.json());
@@ -33,16 +37,14 @@ app.use((req, res, next)=>{
     next()
 });
 app.use(mainRouter);
+app.use(reportRouter);
 app.use(personRouter);
 app.use(customerRouter);
 app.use(userAccountRouter);
 app.use(loginRouter);
+app.use(logoutRouter);
+app.use(projectsRouter);
 app.use(express.static(path.join(__dirname, 'public')));
-
-app.get('/loged', function (req, res) {
-    res.sendFile(path.join(__dirname, '/public/loged.html'));
-    // res.sendFile(path.join(__dirname, '/public/loged.html'));
-});
 
 app.use((req, res, next)=>{
     res.status(404).send('Path doesnt exist')
@@ -53,6 +55,12 @@ app.use((err, req, res, next)=>{
 });
 
 async function appInit() {
+
+
+
+    // const test = await mongoose.createConnection(mongooseConfig.projectsReportsUri, { useNewUrlParser: true });
+    // const DBs = await test.db.listCollections({},{nameOnly: false}).toArray();
+
     const Admin = await UserAccountModel.findOne({userName: 'admin'});
     if (!Admin){
         console.log('Admin account creating');
