@@ -28,14 +28,14 @@ class AppConfig {
     }
 }
 class MongooseConfig {
-    private _reportalUri = config.get<string>('reportal.uri');
-    private _projectsReportsUri = config.get<string>('projectsReports.uri');
+    private _reportal = config.get<string>('reportal.uri');
+    private _reports = config.get<string>('reports.uri');
 
-    get reportalUri(){
-        return this._reportalUri;
+    get reportal(){
+        return this._reportal;
     }
-    get projectsReportsUri(){
-        return this._projectsReportsUri;
+    get reports(){
+        return this._reports;
     }
 }
 class SessionConfig {

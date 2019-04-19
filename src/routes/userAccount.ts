@@ -23,24 +23,24 @@ userAccountRouter.put('/userAccount', async (req, res)=>{
 
     try {
         const doc = await UserAccountModel.findOneAndUpdate({
-            userName: req.query.userName
+            name: req.query.name
         }, req.body, {
             new: true
         });
-        res.json(doc)
+        res.send(200)
     } catch (e) {
         res.status(500).json
     }
 });
 
 userAccountRouter.delete('/userAccount', async (req, res)=>{
-    if(!req.query.userName){
+    if(!req.query.name){
         return res.status(400).send('Missing URL parameter: email')
     }
 
     try {
         const doc = await UserAccountModel.findOneAndRemove({
-            userName: req.query.userName
+            name: req.query.name
         });
         res.json(doc)
     } catch (e) {

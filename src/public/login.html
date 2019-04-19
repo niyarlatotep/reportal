@@ -38,7 +38,7 @@
           logonError.style.visibility = 'visible'
         }
       };
-      xhr.onerror = xhr.onabort = function () {
+      xhr.onerror = xhr.onabort = function (){
         console.error('some error');
         const logonError = document.querySelector('.logon-error');
         logonError.innerHTML = '<strong>Error!</strong> <br> Server connection error.';

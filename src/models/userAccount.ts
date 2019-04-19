@@ -1,72 +1,44 @@
-import * as mongoose from "mongoose";
-import {mongooseConfig} from "../appConfig";
 import * as bcrypt from "bcrypt";
-import * as http from "http";
-import {Model} from "mongoose";
+import {instanceMethod, prop, Typegoose, InstanceType, staticMethod, ModelType} from "typegoose";
+import {mongooseConnection} from "../lib/mongoos";
 
-mongoose.connect(mongooseConfig.reportalUri, { useNewUrlParser: true });
-const UserAccountSchema = new mongoose.Schema({
-    userName: {
-        type: String,
-        required: true,
-        unique: true
-    },
-    hashedPassword: {
-        type: String,
-        required: true
-    },
-    salt: {
-        type: String,
-        required: true
+
+class UserAccount extends Typegoose {
+    @prop({required: true, unique: true})
+    name: string;
+
+    @prop({required: true})
+    hashedPassword: string;
+
+    @prop({required: true})
+    salt: string;
+
+    @prop()
+    set password(password){
+        this.salt = bcrypt.genSaltSync(10);
+        this.hashedPassword = bcrypt.hashSync(password, this.salt);
+        console.log(this.hashedPassword);
     }
-});
 
-UserAccountSchema.virtual('password')
-    .set(function (password) {
-       this.salt = bcrypt.genSaltSync(10);
-       this.hashedPassword = bcrypt.hashSync(password, this.salt);
-    });
-
-UserAccountSchema.methods.checkPassword = async function (password) {
-    return await bcrypt.compare(password, this.hashedPassword)
-};
-
-UserAccountSchema.statics.authorize = async function (userName, password) {
-    const UserAccountModel = this;
-    const foundUserAccount = <IUserAccountDocument>await UserAccountModel.findOne({userName: userName});
-
-    if (foundUserAccount && await foundUserAccount.checkPassword(password)){
-        return foundUserAccount;
-    } else {
-        //todo return auth error
-        return null;
+    @instanceMethod
+    async checkPassword(password){
+        return bcrypt.compare(password, this.hashedPassword)
     }
-};
 
-const UserAccountModel = <UserAccountModel>mongoose.model('UserAccount', UserAccountSchema);
+    @staticMethod
+    static async authorize(this: ModelType<UserAccount> & typeof UserAccount, userName, password) {
+        const foundUserAccount = await this.findOne({name: userName}).exec();
 
-export interface IUserAccountDocument extends mongoose.Document{
-    //todo migrate to typegoost
-    userName: string,
-    password: string
-
-    checkPassword(password: string): Promise<boolean>
+        if (foundUserAccount && await foundUserAccount.checkPassword(password)){
+            return foundUserAccount;
+        } else {
+            //todo return auth error
+            return null;
+        }
+    };
 }
 
-interface UserAccountModel extends Model<IUserAccountDocument>{
-    authorize(userName: string, password: string): Promise<IUserAccountDocument | null>
-}
-
-class AuthError extends Error{
-    constructor(public status, public message){
-        super();
-        this.message = message;
-    }
-}
-
-export {
-    AuthError
-}
+const UserAccountModel = new UserAccount().getModelForClass(UserAccount, {existingConnection: mongooseConnection.reportal});
 
 export {
     UserAccountModel

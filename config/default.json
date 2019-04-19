@@ -5,8 +5,8 @@
     "reportal": {
         "uri": "mongodb://localhost/reportal"
     },
-    "projectsReports": {
-        "uri": "mongodb://localhost/projectsReports"
+    "reports": {
+        "uri": "mongodb://localhost/reports"
     },
     "session": {
         "secret" : "TheBestOfTheBestOfTheBest"

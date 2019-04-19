@@ -3,47 +3,43 @@ import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
 import * as session from 'express-session';
 import * as connectMongo from 'connect-mongo'
-import * as mongoose from "mongoose";
 
-import {appConfig, mongooseConfig, sessionConfig} from "./appConfig";
+import {appConfig, sessionConfig} from "./appConfig";
 import {personRouter} from "./routes/person";
-import {customerRouter} from "./routes/customer";
 import {userAccountRouter} from "./routes/userAccount";
 import * as path from "path";
 import {UserAccountModel} from "./models/userAccount";
 import {loginRouter} from "./routes/login";
 import {mainRouter} from "./routes/main";
-import {reportRouter} from "./routes/report";
-import {ReportModel} from "./models/report";
-import {projectsRouter} from "./routes/projects";
+import {projectRouter} from "./routes/project";
 import {logoutRouter} from "./routes/logout";
+import {mongooseConnection} from "./lib/mongoos";
 
 const app = express();
 //todo make mongoose connectin helper
-mongoose.connect(mongooseConfig.reportalUri, { useNewUrlParser: true, useCreateIndex: true });
 
 
 app.use(bodyParser.json());
 app.use(cookieParser());
 const MongoStore = connectMongo(session);
 app.use(session({secret: sessionConfig.secret,
-    store: new MongoStore({mongooseConnection: mongoose.connection}),
+    store: new MongoStore({mongooseConnection: mongooseConnection.reportal}),
     resave: true,
     saveUninitialized: true
 }));
 
 app.use((req, res, next)=>{
-    console.log(`${new Date().toString()} => ${req.originalUrl}`, req.body);
+    // console.log(`${new Date().toString()} => ${req.originalUrl}`, req.body);
     next()
 });
+
 app.use(mainRouter);
-app.use(reportRouter);
+// app.use(reportRouter);
 app.use(personRouter);
-app.use(customerRouter);
 app.use(userAccountRouter);
 app.use(loginRouter);
 app.use(logoutRouter);
-app.use(projectsRouter);
+app.use(projectRouter);
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use((req, res, next)=>{
@@ -55,22 +51,18 @@ app.use((err, req, res, next)=>{
 });
 
 async function appInit() {
+    //todo
 
-
-
-    // const test = await mongoose.createConnection(mongooseConfig.projectsReportsUri, { useNewUrlParser: true });
-    // const DBs = await test.db.listCollections({},{nameOnly: false}).toArray();
-
-    const Admin = await UserAccountModel.findOne({userName: 'admin'});
+    const Admin = await UserAccountModel.findOne({name: 'admin'}).exec();
     if (!Admin){
         console.log('Admin account creating');
-        const newAdmin = new UserAccountModel({userName: 'admin', password: 'admin'});
+        const newAdmin = new UserAccountModel({name: 'admin', password: 'admin'});
         await newAdmin.save();
         console.log('Admin account created');
         console.log('Guest account creating');
-        const guest = new UserAccountModel({userName: 'guest', password: 'guest'});
+        const guest = new UserAccountModel({name: 'guest', password: 'guest'});
         await guest.save();
-        console.log('Admin account created');
+        console.log('Guest account created');
     }
     app.listen(appConfig.port, ()=> console.log(`Server has started on ${appConfig.port}`));
 }

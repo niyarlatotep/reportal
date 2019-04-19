@@ -3,7 +3,7 @@ import {mongooseConnection} from "../lib/mongoos";
 import {UUID} from "../helpers/uuid";
 
 
-class Report extends Typegoose {
+class Project extends Typegoose {
     @prop({required: true, unique: true})
     name: string;
 
@@ -11,8 +11,8 @@ class Report extends Typegoose {
     id: string;
 }
 
-const ReportModel = new Report().getModelForClass(Report, {existingConnection: mongooseConnection.reportal});
+const ProjectModel = new Project().getModelForClass(Project, {existingConnection: mongooseConnection.reportal});
 
 export {
-    ReportModel
+    ProjectModel
 }
