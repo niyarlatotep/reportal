@@ -12,10 +12,10 @@ projectRouter.post('/project', async (req, res) => {
     if (!req.body){
         return res.status(400).send('Request body is missing');
     }
-    const model = new ProjectModel(req.body.name);
+    const model = new ProjectModel(req.body);
     try {
         const doc = await model.save();
-        res.send(200);
+        res.sendStatus(200);
     } catch (err) {
         res.status(500).json(err);
     }

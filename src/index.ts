@@ -54,6 +54,7 @@ async function appInit() {
     //todo
 
     const Admin = await UserAccountModel.findOne({name: 'admin'}).exec();
+
     if (!Admin){
         console.log('Admin account creating');
         const newAdmin = new UserAccountModel({name: 'admin', password: 'admin'});

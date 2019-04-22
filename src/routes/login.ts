@@ -20,8 +20,6 @@ loginRouter.post('/login', async (req, res) => {
     } catch (e) {
         console.error(e)
     }
-
-
 });
 
 export {
