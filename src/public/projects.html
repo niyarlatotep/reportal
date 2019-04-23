@@ -95,6 +95,11 @@
         form.submit();
       }
     function addProject() {
+      $('#exampleModal').on('hidden.bs.modal', function(e) {
+        $('[name="project_name"]').val('');
+        $('[name="project_description"]').val('');
+      });
+
       const xhr = new XMLHttpRequest();
       xhr.open("POST", "/project", true);
       xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
@@ -104,16 +109,11 @@
           $('#exampleModal').modal('hide');
         } else {
           console.error(xhr.status);
-          // const logonError = document.querySelector('.logon-error');
-          // logonError.innerHTML = '<strong>Error!</strong> Incorrect username or password.';
-          // logonError.style.visibility = 'visible'
+
         }
       };
       xhr.onerror = xhr.onabort = function (){
         console.error('some error');
-        const logonError = document.querySelector('.logon-error');
-        logonError.innerHTML = '<strong>Error!</strong> <br> Server connection error.';
-        logonError.style.visibility = 'visible'
       };
       const addProjectForm = document.forms.new_project;
       xhr.send(JSON.stringify({name: addProjectForm.elements.project_name.value, description: addProjectForm.elements.project_description.value}));
