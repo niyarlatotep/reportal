@@ -5,7 +5,8 @@ import {ProjectModel} from "../models/project";
 const projectRouter = express.Router();
 
 projectRouter.get('/projects', async (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/projects.html'));
+    const projects = await ProjectModel.find({}).select({ "name": 1, "_id": 0}).exec();
+    res.render('projects', {projects: projects});
 });
 
 projectRouter.post('/project', async (req, res) => {

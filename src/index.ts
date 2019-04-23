@@ -3,11 +3,12 @@ import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
 import * as session from 'express-session';
 import * as connectMongo from 'connect-mongo'
+import * as path from "path";
+import * as exhbs from 'express-handlebars';
 
 import {appConfig, sessionConfig} from "./appConfig";
 import {personRouter} from "./routes/person";
 import {userAccountRouter} from "./routes/userAccount";
-import * as path from "path";
 import {UserAccountModel} from "./models/userAccount";
 import {loginRouter} from "./routes/login";
 import {mainRouter} from "./routes/main";
@@ -17,7 +18,9 @@ import {mongooseConnection} from "./lib/mongoos";
 
 const app = express();
 //todo make mongoose connectin helper
-
+app.set('views', path.join(__dirname, 'views'));
+app.engine('handlebars', exhbs());
+app.set('view engine', 'handlebars');
 
 app.use(bodyParser.json());
 app.use(cookieParser());
@@ -27,6 +30,10 @@ app.use(session({secret: sessionConfig.secret,
     resave: true,
     saveUninitialized: true
 }));
+
+app.get('/about', (req, res)=>{
+    res.render('index')
+});
 
 app.use((req, res, next)=>{
     // console.log(`${new Date().toString()} => ${req.originalUrl}`, req.body);
@@ -51,20 +58,19 @@ app.use((err, req, res, next)=>{
 });
 
 async function appInit() {
-    //todo
-
-    const Admin = await UserAccountModel.findOne({name: 'admin'}).exec();
-
-    if (!Admin){
-        console.log('Admin account creating');
-        const newAdmin = new UserAccountModel({name: 'admin', password: 'admin'});
-        await newAdmin.save();
-        console.log('Admin account created');
-        console.log('Guest account creating');
-        const guest = new UserAccountModel({name: 'guest', password: 'guest'});
-        await guest.save();
-        console.log('Guest account created');
-    }
+    //
+    // const Admin = await UserAccountModel.findOne({name: 'admin'}).exec();
+    //
+    // if (!Admin){
+    //     console.log('Admin account creating');
+    //     const newAdmin = new UserAccountModel({name: 'admin', password: 'admin'});
+    //     await newAdmin.save();
+    //     console.log('Admin account created');
+    //     console.log('Guest account creating');
+    //     const guest = new UserAccountModel({name: 'guest', password: 'guest'});
+    //     await guest.save();
+    //     console.log('Guest account created');
+    // }
     app.listen(appConfig.port, ()=> console.log(`Server has started on ${appConfig.port}`));
 }
 

@@ -52,15 +52,21 @@
     </div>
 
     <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
-      <h1 class="display-5">Select project</h1>
-      <p class="lead">Select project to view reports</p>
+        {{#if projects}}
+            <h1 class="display-5">Select project</h1>
+            <p class="lead">Select project to view reports</p>
+        {{else}}
+            <a href="#exampleModal" data-toggle="modal" data-target="#exampleModal" style="font-size: 20px">Add new project to start</a>
+        {{/if}}
     </div>
 
     <div class="container">
 
+
       <div class="list-group">
-        <a href="#" class="list-group-item list-group-item-action">Nsms Release 1.4.1</a>
-        <a href="#" class="list-group-item list-group-item-action">Silso</a>
+          {{#each projects}}
+              <a href="#" class="list-group-item list-group-item-action">{{this.name}}</a>
+          {{/each}}
       </div>
     </div>
     <script>
@@ -94,7 +100,7 @@
         console.error('some error');
       };
       const addProjectForm = document.forms.new_project;
-      xhr.send(JSON.stringify({name: addProjectForm.elements.project_name.value, description: addProjectForm.elements.project_description.value}));
+      xhr.send(JSON.stringify({name: addProjectForm.elements.project_name.value}));
     }
     </script>
 </body></html>

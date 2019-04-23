@@ -1,4 +1,3 @@
-import {UserAccountModel, IUserAccountDocument} from "../models/userAccount";
 import * as express from 'express';
 
 const logoutRouter = express.Router();
