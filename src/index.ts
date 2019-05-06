@@ -15,11 +15,12 @@ import {mainRouter} from "./routes/main";
 import {projectRouter} from "./routes/project";
 import {logoutRouter} from "./routes/logout";
 import {mongooseConnection} from "./lib/mongoos";
+import {reportRouter} from "./routes/report";
 
 const app = express();
 //todo make mongoose connectin helper
 app.set('views', path.join(__dirname, 'views'));
-app.engine('handlebars', exhbs());
+app.engine('handlebars', exhbs({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
 
 app.use(bodyParser.json());
@@ -32,7 +33,7 @@ app.use(session({secret: sessionConfig.secret,
 }));
 
 app.get('/about', (req, res)=>{
-    res.render('index')
+    res.render('reports');
 });
 
 app.use((req, res, next)=>{
@@ -41,7 +42,7 @@ app.use((req, res, next)=>{
 });
 
 app.use(mainRouter);
-// app.use(reportRouter);
+app.use(reportRouter);
 app.use(personRouter);
 app.use(userAccountRouter);
 app.use(loginRouter);
@@ -58,19 +59,18 @@ app.use((err, req, res, next)=>{
 });
 
 async function appInit() {
-    //
-    // const Admin = await UserAccountModel.findOne({name: 'admin'}).exec();
-    //
-    // if (!Admin){
-    //     console.log('Admin account creating');
-    //     const newAdmin = new UserAccountModel({name: 'admin', password: 'admin'});
-    //     await newAdmin.save();
-    //     console.log('Admin account created');
-    //     console.log('Guest account creating');
-    //     const guest = new UserAccountModel({name: 'guest', password: 'guest'});
-    //     await guest.save();
-    //     console.log('Guest account created');
-    // }
+    const admin = await UserAccountModel.findOne({name: 'admin'}).exec();
+
+    if (!admin){
+        console.log('Admin account creating');
+        const newAdmin = new UserAccountModel({name: 'admin', password: 'admin'});
+        await newAdmin.save();
+        console.log('Admin account created');
+        console.log('Guest account creating');
+        const guest = new UserAccountModel({name: 'guest', password: 'guest'});
+        await guest.save();
+        console.log('Guest account created');
+    }
     app.listen(appConfig.port, ()=> console.log(`Server has started on ${appConfig.port}`));
 }
 

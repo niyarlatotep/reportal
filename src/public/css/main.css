@@ -1,0 +1,7 @@
+.btn-light{
+    border-color: #d8d9db80;
+}
+
+.btn-light:focus{
+    box-shadow: none;
+}

@@ -17,7 +17,6 @@ class UserAccount extends Typegoose {
     set password(password){
         this.salt = bcrypt.genSaltSync(10);
         this.hashedPassword = bcrypt.hashSync(password, this.salt);
-        console.log(this.hashedPassword);
     }
 
     @instanceMethod
