@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>Reportal</title>
-    <script type="module" src="js/jquery.min.js"></script>
-    <script type="module" src="js/bootstrap.min.js"></script>
-    <link href="css/bootstrap.min.css" rel="stylesheet">
-
-    <link href="css/main.css" rel="stylesheet">
+    <script type="module" src="/js/jquery.min.js"></script>
+    <script type="module" src="/js/bootstrap.min.js"></script>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/main.css" rel="stylesheet">
 </head>
 <body>
 <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 bg-white border-bottom box-shadow">
@@ -20,6 +19,15 @@
                 Add new project
             </button>
         </nav>
+    {{/if}}
+
+    {{#if reports}}
+    <nav class="my-2 my-md-0 mr-md-3">
+        <button type="button" class="btn btn-light" data-toggle="modal" data-target="#exampleModal">
+            <img class="" src="/assets/id.svg" alt="" width="20" height="20">
+            Project id
+        </button>
+    </nav>
     {{/if}}
 
     <button class="btn btn-outline-primary" style="color: #343a40;" onclick="logout();">Sign out</button>

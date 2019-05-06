@@ -1,4 +1,4 @@
-<link href="css/projects.css" rel="stylesheet">
+<link href="/css/projects.css" rel="stylesheet">
 
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -56,9 +56,7 @@
 </div>
 <script>
     function viewProject(projectId) {
-        console.log(projectId);
-        // window.location.href = `/reports/${projectId}`;
-        window.location.href = `/reports`;
+        window.location.href = `/project/${projectId}`;
     }
     function addProject() {
         $('#exampleModal').on('hidden.bs.modal', function(e) {

@@ -1,5 +1,5 @@
 import * as express from 'express';
-import {ReportInfoModel} from "../models/reportInfo";
+import {LaunchModel} from "../models/launch";
 import {Report, ReportModel} from "../models/report";
 import {ProjectModel} from "../models/project";
 import {Types} from "mongoose";
@@ -27,9 +27,9 @@ reportRouter.post('/report', async (req, res) => {
         return res.sendStatus(404);
     }
 
-    const reportInfo = await ReportInfoModel.findOne({launchId: requestBody.launchId}).exec();
-    if (!reportInfo){
-        const model = new ReportInfoModel({launchId: requestBody.launchId, projectId: requestBody.projectId,
+    const launch = await LaunchModel.findOne({launchId: requestBody.launchId}).exec();
+    if (!launch){
+        const model = new LaunchModel({launchId: requestBody.launchId, projectId: requestBody.projectId,
             launchDate: requestBody.specData.utcStarted});
         try {
             await model.save();
