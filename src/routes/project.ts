@@ -1,6 +1,6 @@
 import * as express from 'express';
 import {ProjectModel} from "../models/project";
-import {LaunchModel} from "../models/launch";
+import {Launch, LaunchModel} from "../models/launch";
 
 const projectRouter = express.Router();
 
@@ -26,8 +26,28 @@ projectRouter.post('/project', async (req, res) => {
 });
 
 projectRouter.get('/project/:projectId', async (req, res) => {
-    const launches = await LaunchModel.find({projectId: req.params.projectId});
-    console.log(launches);
+    const launches: Launch[] = await LaunchModel.find({projectId: req.params.projectId});
+    launches.sort((a, b)=>{
+        return +new Date(a.launchDate) - +new Date(b.launchDate)
+    });
+    launches.reverse();
+
+    //todo move to date converter
+    launches.forEach(launch =>{
+        const dateFormat = new Date(launch.launchDate);
+        const dateString =  dateFormat.toLocaleDateString()
+            .split('-')
+            .reverse()
+            .map(str=>{
+                return str.padStart(2, '0');
+            })
+            .join('.');
+
+        const timeString = dateFormat.toLocaleTimeString();
+
+        launch.launchDate = [dateString, timeString].join(' ');
+    });
+    //todo move to reports
     res.render('reports', {reports: {list:  launches, projectId: req.params.projectId}});
 });
 

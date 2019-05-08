@@ -16,5 +16,6 @@ class Launch extends Typegoose {
 const LaunchModel = new Launch().getModelForClass(Launch, {existingConnection: mongooseConnection.reportal});
 
 export {
-    LaunchModel
+    LaunchModel,
+    Launch
 }
