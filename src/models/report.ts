@@ -1,7 +1,10 @@
 import {instanceMethod, prop, Typegoose, InstanceType, staticMethod, ModelType} from "typegoose";
 import {mongooseConnection} from "../lib/mongoos";
 
-interface SuiteReport {
+interface SpecReport {
+    launchId: string;
+    projectId: string;
+    specId: string
     id: string
     description: string
     fullName: string
@@ -17,27 +20,32 @@ interface SuiteReport {
     platform: string
     browserName: string
     suiteDirectory: string
-    suiteFile: string
-
 }
 
 class Report extends Typegoose {
-    @prop({required: true})
+    @prop({required: true, unique: true})
     launchId: string;
 
     @prop({required: true})
     projectId: string;
 
     @prop({required: true})
-    specData: SuiteReport;
+    launchDate: string;
 
-    @prop()
-    specImages: InstanceType<Buffer>;
+    @prop({required: true})
+    specsReports: [SpecReport];
+
+    @prop({required: true})
+    specsIds: [string];
+
+    @prop({required: true})
+    browsers: [string];
 }
 
 const ReportModel = new Report().getModelForClass(Report, {existingConnection: mongooseConnection.reportal});
 
 export {
     ReportModel,
-    Report
+    Report,
+    SpecReport
 }

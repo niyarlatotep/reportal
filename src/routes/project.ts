@@ -1,6 +1,6 @@
 import * as express from 'express';
 import {ProjectModel} from "../models/project";
-import {Launch, LaunchModel} from "../models/launch";
+import {Report, ReportModel} from "../models/report";
 
 const projectRouter = express.Router();
 
@@ -26,7 +26,7 @@ projectRouter.post('/project', async (req, res) => {
 });
 
 projectRouter.get('/project/:projectId', async (req, res) => {
-    const launches: Launch[] = await LaunchModel.find({projectId: req.params.projectId});
+    const launches: Report[] = await ReportModel.find({projectId: req.params.projectId});
     launches.sort((a, b)=>{
         return +new Date(a.launchDate) - +new Date(b.launchDate)
     });
@@ -48,7 +48,7 @@ projectRouter.get('/project/:projectId', async (req, res) => {
         launch.launchDate = [dateString, timeString].join(' ');
     });
     //todo move to reports
-    res.render('reports', {reports: {list:  launches, projectId: req.params.projectId}});
+    res.render('launches', {launches: {list:  launches, projectId: req.params.projectId}});
 });
 
 export {
