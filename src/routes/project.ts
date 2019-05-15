@@ -1,6 +1,6 @@
 import * as express from 'express';
 import {ProjectModel} from "../models/project";
-import {Report, ReportModel} from "../models/report";
+import {Launch, LaunchModel} from "../models/launch";
 
 const projectRouter = express.Router();
 
@@ -26,7 +26,7 @@ projectRouter.post('/project', async (req, res) => {
 });
 
 projectRouter.get('/project/:projectId', async (req, res) => {
-    const launches: Report[] = await ReportModel.find({projectId: req.params.projectId});
+    const launches: Launch[] = await LaunchModel.find({projectId: req.params.projectId});
     launches.sort((a, b)=>{
         return +new Date(a.launchDate) - +new Date(b.launchDate)
     });
