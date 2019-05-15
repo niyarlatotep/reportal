@@ -24,7 +24,7 @@ reportRouter.get('/report/:launchId', async (req, res) => {
     res.render('reports', {launch: {browsers: launch.browsers, specsReports: launch.specsReports}});
 });
 
-reportRouter.post('/report', async (req, res) => {
+reportRouter.post('/report', async (req, res) =>{
     if (!req.body){
         return res.status(400).send('Request body is missing');
     }
