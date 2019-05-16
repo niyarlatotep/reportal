@@ -40,7 +40,7 @@ class Launch extends Typegoose {
     @prop({required: true})
     specsReports: SpecReport[];
 
-    @prop({required: true, unique: true})
+    @prop({required: true})
     browsers: string[];
 }
 
