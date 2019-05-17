@@ -7,21 +7,16 @@ const reportRouter = express.Router();
 
 reportRouter.get('/report/:launchId', async (req, res) => {
     const launch = <Launch>await LaunchModel.findById(req.params.launchId);
-    
-    for (const specReport of launch.specsReports){
-        let sortedBrowserResults = [];
+    const resultsSorted: {specId: string, browsersResults: (ClientReport | string)[]}[] = [];
+    for (const specReport in launch.specsReports){
+        console.log(resultsSorted);
+        let sortedBrowserResults: (ClientReport | string)[] = [];
         for (const browser of launch.browsers){
-            const browserResult = specReport.browsersResults.filter(browserResult => browserResult.browserName === browser);
-            if (browserResult.length){
-                sortedBrowserResults = sortedBrowserResults.concat(browserResult)
-            } else {
-                sortedBrowserResults.push('')
-            }
+            sortedBrowserResults.push(launch.specsReports[specReport][browser] || '')
         }
-        specReport.browsersResults = sortedBrowserResults;
+        resultsSorted.push({specId: specReport, browsersResults: sortedBrowserResults});
     }
-
-    res.render('reports', {launch: {browsers: launch.browsers, specsReports: launch.specsReports}});
+    res.render('reports', {launch: {browsers: launch.browsers, specsReports: resultsSorted}});
 });
 
 reportRouter.post('/report', async (req, res) =>{
@@ -29,6 +24,8 @@ reportRouter.post('/report', async (req, res) =>{
         return res.status(400).send('Request body is missing');
     }
     const requestBody: ClientReport = req.body;
+    requestBody.utcStarted = new Date(requestBody.utcStarted);
+
 
     if (!Types.ObjectId.isValid(requestBody.projectId)){
         console.log('id is invalid');
@@ -46,7 +43,7 @@ reportRouter.post('/report', async (req, res) =>{
             launchId: requestBody.launchId,
             projectId: requestBody.projectId,
             launchDate: requestBody.utcStarted,
-            specsReports: [{specId: requestBody.specId, browsersResults: [requestBody]}],
+            specsReports: {[requestBody.specId]: {[requestBody.browserName]: requestBody}},
             browsers: [requestBody.browserName]
         });
         try {
@@ -58,24 +55,19 @@ reportRouter.post('/report', async (req, res) =>{
             return res.status(500).json(err);
         }
     } else {
-        function addReportToExistingLaunch(){
-            for (let report of launch.specsReports){
-                if (report.specId === requestBody.specId){
-                    //todo check browsers unique
-                    if (report.browsersResults.some(browserResult => browserResult.browserName === requestBody.browserName)){
-                        res.status(500).json('Browser name duplicate');
-                        throw new Error('Browser name duplicate');
-                    }
-                    report.browsersResults.push(requestBody);
-                    launch.markModified('specsReports');
-                    return;
-                }
+        if (launch.specsReports[requestBody.specId]){
+            //if report exists
+            if (launch.specsReports[requestBody.specId][requestBody.browserName]){
+                //if such browser exists yet can't be duple
+                res.status(500).json('Browser name duplicate');
+                throw new Error('Browser name duplicate');
             }
-            launch.specsReports.push({specId: requestBody.specId, browsersResults: [requestBody]});
-            launch.markModified('specsReports');
+            launch.specsReports[requestBody.specId][requestBody.browserName] = requestBody;
+        } else {
+            launch.specsReports[requestBody.specId] = {[requestBody.browserName]: requestBody};
         }
+        launch.markModified('specsReports');
 
-        addReportToExistingLaunch();
         if (!launch.browsers.includes(requestBody.browserName)){
             launch.browsers.push(requestBody.browserName);
             launch.markModified('browsers');

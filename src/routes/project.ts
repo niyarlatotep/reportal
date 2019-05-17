@@ -26,16 +26,11 @@ projectRouter.post('/project', async (req, res) => {
 });
 
 projectRouter.get('/project/:projectId', async (req, res) => {
-    const launches: Launch[] = await LaunchModel.find({projectId: req.params.projectId});
-    launches.sort((a, b)=>{
-        return +new Date(a.launchDate) - +new Date(b.launchDate)
-    });
-    launches.reverse();
-
-    //todo move to date converter
-    launches.forEach(launch =>{
-        const dateFormat = new Date(launch.launchDate);
-        const dateString =  dateFormat.toLocaleDateString()
+    const launches: Launch[] = await LaunchModel.find({projectId: req.params.projectId}).sort({launchDate: -1});
+    const localLaunches: any = [...launches];
+    //todo add typing and move to date converter
+    localLaunches.forEach(launch =>{
+        const dateString =  launch.launchDate.toLocaleDateString()
             .split('-')
             .reverse()
             .map(str=>{
@@ -43,12 +38,11 @@ projectRouter.get('/project/:projectId', async (req, res) => {
             })
             .join('.');
 
-        const timeString = dateFormat.toLocaleTimeString();
-
-        launch.launchDate = [dateString, timeString].join(' ');
+        const timeString = launch.launchDate.toLocaleTimeString();
+        launch.launchDateLocal = [dateString, timeString].join(' ');
     });
     //todo move to reports
-    res.render('launches', {launches: {list:  launches, projectId: req.params.projectId}});
+    res.render('launches', {launches: {list:  localLaunches, projectId: req.params.projectId}});
 });
 
 export {

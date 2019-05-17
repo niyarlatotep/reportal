@@ -12,7 +12,7 @@ type ClientReport = {
     failedExpectations: [{matcherName: string, message: string, stack: string, passed: boolean}];
     passedExpectations: [{matcherName: string, message: string, stack: string, passed: boolean}];
     pendingReason: string;
-    utcStarted: string;
+    utcStarted: string | Date;
     suite: string;
     status: string;
     utcFinished: string;
@@ -23,8 +23,7 @@ type ClientReport = {
 }
 
 type SpecReport = {
-    specId: string;
-    browsersResults: ClientReport[];
+    [key: string]: ClientReport
 }
 
 class Launch extends Typegoose {
@@ -35,10 +34,10 @@ class Launch extends Typegoose {
     projectId: string;
 
     @prop({required: true})
-    launchDate: string;
+    launchDate: Date;
 
     @prop({required: true})
-    specsReports: SpecReport[];
+    specsReports: {[key: string]: SpecReport};
 
     @prop({required: true})
     browsers: string[];
