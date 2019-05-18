@@ -8,9 +8,10 @@
 </head>
 <body>
 
-<h4 style="text-align: center">Specs reports</h4>
+<h4 style="text-align: center; margin-top: 20px; margin-bottom: 20px;">Tests reports</h4>
+<div class="divTable">
 <table class="table table-bordered table-hover">
-    <thead>
+    <thead style="background-color: rgba(0,0,0,.03);">
     <tr>
         <th>Spec name</th>
         {{#each launch.browsers}}
@@ -29,5 +30,6 @@
         {{/each}}
     </tbody>
 </table>
+</div>
 </body>
 </html>
