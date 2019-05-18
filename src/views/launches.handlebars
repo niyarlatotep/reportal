@@ -1,21 +1,4 @@
 <link href="/css/launches.css" rel="stylesheet">
-    <style>
-      .bd-placeholder-img {
-        font-size: 1.125rem;
-        text-anchor: middle;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
-      }
-
-      @media (min-width: 768px) {
-        .bd-placeholder-img-lg {
-          font-size: 3.5rem;
-        }
-      }
-    </style>
-
 
   <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -32,6 +15,10 @@
       </div>
     </div>
   </div>
+
+{{#unless launches.list}}
+    <h4 style="text-align: center; margin-top: 20px; margin-bottom: 20px;">No tests launches</h4>
+{{/unless}}
 
 <main role="main">
 
@@ -64,21 +51,9 @@
   </div>
 </main>
 
-<!--SHOW IT ONLY IF THERE IS A SCROLL BAR-->
-<footer class="text-muted" style="visibility: hidden;">
-  <div class="container">
-    <p class="float-right">
-      <a href="#">Back to top</a>
-    </p>
-  </div>
-</footer>
 
 <script>
     function viewLaunch(id) {
         window.location.href = `/report/${id}`;
-    }
-    if ($(document).height() > $(window).height()) {
-        const footer = document.querySelector('footer');
-        footer.style.visibility = 'visible'
     }
 </script>

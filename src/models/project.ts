@@ -2,7 +2,7 @@ import {instanceMethod, prop, Typegoose, InstanceType, staticMethod, ModelType} 
 import {mongooseConnection} from "../lib/mongoos";
 
 class Project extends Typegoose {
-    @prop({required: true, unique: true})
+    @prop({required: true})
     name: string;
 
     @prop()
