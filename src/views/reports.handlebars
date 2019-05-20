@@ -22,3 +22,12 @@
     </tbody>
 </table>
 </div>
+
+<script>
+    console.log('script');
+    let eventSource = new EventSource(`/report-update`);
+
+    eventSource.onmessage = function(e) {
+        document.location.reload()
+    };
+</script>

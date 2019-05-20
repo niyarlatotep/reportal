@@ -1,10 +1,30 @@
 <link href="/css/launches.css" rel="stylesheet">
 
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="delete-project" tabindex="-1" role="dialog" aria-labelledby="delete-project-label" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">New project</h5>
+                <h5 class="modal-title" id="delete-project-label">Delete project</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                All project reports will be deleted
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary delete-project-button" onclick="deleteProject(this.value);">Delete project</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="add-project" tabindex="-1" role="dialog" aria-labelledby="add-project-label" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="add-project-label">New project</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -50,7 +70,7 @@
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div class="btn-group">
                                         <button type="button" value="{{this._id}}" class="btn btn-sm btn-outline-secondary" onclick="viewProject(this.value);">View</button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                                        <button type="button" value="{{this._id}}" class="btn btn-sm btn-outline-secondary" data-toggle="modal" data-target="#delete-project">Delete</button>
                                     </div>
                                     <small class="text-muted">9 mins</small>
                                 </div>
@@ -58,7 +78,6 @@
                         </div>
                     </div>
                 {{/each}}
-
             </div>
         </div>
     </div>
@@ -66,25 +85,52 @@
 
 
 <script>
+
+    $(document).on("click", '[data-target="#delete-project"]', function () {
+        $('.delete-project-button').val(this.value)
+    });
+
+    function deleteProject(projectId){
+        $('#delete-project').on('hidden.bs.modal', function(e) {
+            $('.delete-project-button').val('');
+            document.location.reload()
+        });
+
+        const xhr = new XMLHttpRequest();
+        xhr.open("DELETE", `/project/${projectId}`, true);
+        xhr.onload = function (){
+            if (xhr.status === 200){
+                $('#delete-project').modal('hide');
+            } else {
+                console.error(xhr.status);
+                $('#delete-project').modal('hide');
+            }
+        };
+        xhr.onerror = xhr.onabort = function (){
+            console.error('some error');
+        };
+        xhr.send();
+    }
+
     function viewProject(projectId) {
         window.location.href = `/project/${projectId}`;
     }
     function addProject() {
-        $('#exampleModal').on('hidden.bs.modal', function(e) {
+        $('#add-project').on('hidden.bs.modal', function(e) {
             $('[name="project_name"]').val('');
             $('[name="project_description"]').val('');
-            window.location.href = "/projects";
+            document.location.reload();
         });
 
         const xhr = new XMLHttpRequest();
         xhr.open("POST", "/project", true);
         xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
-        xhr.onload = function () {
+        xhr.onload = function (){
             if (xhr.status === 200){
-                $('#exampleModal').modal('hide');
+                $('#add-project').modal('hide');
             } else {
                 console.error(xhr.status);
-                $('#exampleModal').modal('hide');
+                $('#add-project').modal('hide');
             }
         };
         xhr.onerror = xhr.onabort = function (){

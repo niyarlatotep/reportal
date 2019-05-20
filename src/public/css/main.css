@@ -2,7 +2,7 @@
     border-color: #d8d9db80;
 }
 
-.btn-light:focus{
+.btn:focus{
     box-shadow: none;
 }
 

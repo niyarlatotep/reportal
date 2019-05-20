@@ -7,7 +7,6 @@ import * as path from "path";
 import * as exhbs from 'express-handlebars';
 
 import {appConfig, sessionConfig} from "./appConfig";
-import {personRouter} from "./routes/person";
 import {userAccountRouter} from "./routes/userAccount";
 import {UserAccountModel} from "./models/userAccount";
 import {loginRouter} from "./routes/login";
@@ -43,7 +42,6 @@ app.use((req, res, next)=>{
 
 app.use(mainRouter);
 app.use(reportRouter);
-app.use(personRouter);
 app.use(userAccountRouter);
 app.use(loginRouter);
 app.use(logoutRouter);

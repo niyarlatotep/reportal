@@ -53,6 +53,12 @@
 
 
 <script>
+    let eventSource = new EventSource(`/launches-update`);
+
+    eventSource.onmessage = function(e) {
+        document.location.reload()
+    };
+
     function viewLaunch(id) {
         window.location.href = `/report/${id}`;
     }

@@ -19,7 +19,6 @@ class AppConfig {
         if (typeChecker.isInt(this._port)){
             return this._port;
         }
-        console.log(this._port);
         throw new Error(`Type of port value is not a valid number`)
     }
 

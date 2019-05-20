@@ -27,7 +27,7 @@ type SpecReport = {
 }
 
 class Launch extends Typegoose {
-    @prop({required: true, unique: true})
+    @prop({required: true})
     launchId: string;
 
     @prop({required: true})

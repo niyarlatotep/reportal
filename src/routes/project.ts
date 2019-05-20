@@ -25,6 +25,13 @@ projectRouter.post('/project', async (req, res) => {
     }
 });
 
+projectRouter.delete('/project/:projectId', async (req, res) => {
+    console.log(req.params.projectId);
+    res.sendStatus(200);
+    await ProjectModel.remove({_id: req.params.projectId}).exec();
+    await LaunchModel.remove({projectId: req.params.projectId}).exec();
+});
+
 projectRouter.get('/project/:projectId', async (req, res) => {
     const launches: Launch[] = await LaunchModel.find({projectId: req.params.projectId}).sort({launchDate: -1});
     const localLaunches: any = [...launches];

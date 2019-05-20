@@ -7,19 +7,50 @@ const reportRouter = express.Router();
 
 reportRouter.get('/report/:launchId', async (req, res) => {
     const launch = <Launch>await LaunchModel.findById(req.params.launchId);
-    const resultsSorted: {specId: string, browsersResults: (ClientReport | string)[]}[] = [];
+    const resultsSorted: {launchId: string, specId: string, browsersResults: (ClientReport | string)[]}[] = [];
     for (const specReport in launch.specsReports){
         console.log(resultsSorted);
         let sortedBrowserResults: (ClientReport | string)[] = [];
         for (const browser of launch.browsers){
             sortedBrowserResults.push(launch.specsReports[specReport][browser] || '')
         }
-        resultsSorted.push({specId: specReport, browsersResults: sortedBrowserResults});
+        resultsSorted.push({launchId: launch.launchId, specId: specReport, browsersResults: sortedBrowserResults});
     }
     res.render('reports', {launch: {browsers: launch.browsers, specsReports: resultsSorted}});
 });
 
+let reportsUpdate: any;
+reportRouter.get('/report-update', async (req, res) =>{
+    console.log('report-update');
+    //todo add request report id
+    res.writeHead(200, {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+    });
+    res.write('\n');
+
+    reportsUpdate = res;
+
+});
+
+let launchesUpdate: any;
+reportRouter.get('/launches-update', async (req, res) =>{
+    console.log('report-update');
+    //todo add request report id
+    res.writeHead(200, {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+    });
+    res.write('\n');
+
+    launchesUpdate = res;
+
+});
+
 reportRouter.post('/report', async (req, res) =>{
+
     if (!req.body){
         return res.status(400).send('Request body is missing');
     }
@@ -37,7 +68,7 @@ reportRouter.post('/report', async (req, res) =>{
         return res.sendStatus(404);
     }
 
-    const launch = await LaunchModel.findOne({launchId: requestBody.launchId}).exec();
+    const launch = await LaunchModel.findOne({launchId: requestBody.launchId, projectId: requestBody.projectId}).exec();
     if (!launch){
         const model = new LaunchModel({
             launchId: requestBody.launchId,
@@ -50,6 +81,7 @@ reportRouter.post('/report', async (req, res) =>{
             await model.save();
             console.log(`New launch added: ${model}`);
             res.sendStatus(200);
+            launchesUpdate.write(`data: Test Message -- ${Date.now()}\n\n`);
         } catch (err) {
             console.error(err);
             return res.status(500).json(err);
@@ -77,6 +109,7 @@ reportRouter.post('/report', async (req, res) =>{
             await launch.save();
             res.sendStatus(200);
             console.log(`New spec results added`);
+            reportsUpdate.write(`data: Test Message -- ${Date.now()}\n\n`);
         } catch (err) {
             console.error(err);
             return res.status(500).json(err);

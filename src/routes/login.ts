@@ -9,12 +9,9 @@ loginRouter.post('/login', async (req, res) => {
     try {
         const currentUserAccount = await UserAccountModel.authorize(userName, password);
         if (currentUserAccount){
-            console.log(currentUserAccount);
-            console.log('login correct');
             req.session.user = currentUserAccount;
             res.send();
         } else {
-            console.log('login incorrect');
             res.status(403).send();
         }
     } catch (e) {
