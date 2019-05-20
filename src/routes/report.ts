@@ -2,6 +2,7 @@ import * as express from 'express';
 import {ClientReport, Launch, LaunchModel, SpecReport} from "../models/launch";
 import {ProjectModel} from "../models/project";
 import {Types} from "mongoose";
+import {launchesSubscribes} from "./subscribes";
 
 const reportRouter = express.Router();
 
@@ -29,24 +30,11 @@ reportRouter.get('/report-update', async (req, res) =>{
         'Connection': 'keep-alive',
     });
     res.write('\n');
-
     reportsUpdate = res;
-
 });
 
-let launchesUpdate: any;
 reportRouter.get('/launches-update', async (req, res) =>{
-    console.log('report-update');
-    //todo add request report id
-    res.writeHead(200, {
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive',
-    });
-    res.write('\n');
-
-    launchesUpdate = res;
-
+    launchesSubscribes.subscribe(res);
 });
 
 reportRouter.post('/report', async (req, res) =>{
@@ -81,7 +69,7 @@ reportRouter.post('/report', async (req, res) =>{
             await model.save();
             console.log(`New launch added: ${model}`);
             res.sendStatus(200);
-            launchesUpdate.write(`data: Test Message -- ${Date.now()}\n\n`);
+            launchesSubscribes.publish();
         } catch (err) {
             console.error(err);
             return res.status(500).json(err);
@@ -90,7 +78,7 @@ reportRouter.post('/report', async (req, res) =>{
         if (launch.specsReports[requestBody.specId]){
             //if report exists
             if (launch.specsReports[requestBody.specId][requestBody.browserName]){
-                //if such browser exists yet can't be duple
+                //if such browser exists yet can't be duplicate
                 res.status(500).json('Browser name duplicate');
                 throw new Error('Browser name duplicate');
             }
