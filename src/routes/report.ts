@@ -2,7 +2,7 @@ import * as express from 'express';
 import {ClientReport, Launch, LaunchModel, SpecReport} from "../models/launch";
 import {ProjectModel} from "../models/project";
 import {Types} from "mongoose";
-import {launchesSubscribes} from "./subscribes";
+import {subscribes} from "./subscribes";
 
 const reportRouter = express.Router();
 
@@ -17,24 +17,16 @@ reportRouter.get('/report/:launchId', async (req, res) => {
         }
         resultsSorted.push({launchId: launch.launchId, specId: specReport, browsersResults: sortedBrowserResults});
     }
-    res.render('reports', {launch: {browsers: launch.browsers, specsReports: resultsSorted}});
+    res.render('reports', {launch: { launchId: launch.launchId,
+            browsers: launch.browsers, specsReports: resultsSorted}});
 });
 
-let reportsUpdate: any;
-reportRouter.get('/report-update', async (req, res) =>{
-    console.log('report-update');
-    //todo add request report id
-    res.writeHead(200, {
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive',
-    });
-    res.write('\n');
-    reportsUpdate = res;
+reportRouter.get('/report-update/:launchId', async (req, res) =>{
+    subscribes.subscribe(res, req.params.launchId);
 });
 
-reportRouter.get('/launches-update', async (req, res) =>{
-    launchesSubscribes.subscribe(res);
+reportRouter.get('/launches-update/:projectId', async (req, res) =>{
+    subscribes.subscribe(res, req.params.projectId);
 });
 
 reportRouter.post('/report', async (req, res) =>{
@@ -69,7 +61,7 @@ reportRouter.post('/report', async (req, res) =>{
             await model.save();
             console.log(`New launch added: ${model}`);
             res.sendStatus(200);
-            launchesSubscribes.publish();
+            subscribes.publish(requestBody.projectId);
         } catch (err) {
             console.error(err);
             return res.status(500).json(err);
@@ -97,7 +89,7 @@ reportRouter.post('/report', async (req, res) =>{
             await launch.save();
             res.sendStatus(200);
             console.log(`New spec results added`);
-            reportsUpdate.write(`data: Test Message -- ${Date.now()}\n\n`);
+            subscribes.publish(requestBody.launchId);
         } catch (err) {
             console.error(err);
             return res.status(500).json(err);

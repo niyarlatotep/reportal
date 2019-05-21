@@ -28,8 +28,10 @@ projectRouter.post('/project', async (req, res) => {
 projectRouter.delete('/project/:projectId', async (req, res) => {
     console.log(req.params.projectId);
     res.sendStatus(200);
-    await ProjectModel.remove({_id: req.params.projectId}).exec();
-    await LaunchModel.remove({projectId: req.params.projectId}).exec();
+    await Promise.all([
+        LaunchModel.deleteMany({projectId: req.params.projectId}).exec(),
+        ProjectModel.deleteOne({_id: req.params.projectId}).exec()
+    ]);
 });
 
 projectRouter.get('/project/:projectId', async (req, res) => {

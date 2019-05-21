@@ -25,7 +25,7 @@
 
 <script>
     console.log('script');
-    let eventSource = new EventSource(`/report-update`);
+    let eventSource = new EventSource('/report-update/{{launch.launchId}}');
 
     eventSource.onmessage = function(e) {
         document.location.reload()

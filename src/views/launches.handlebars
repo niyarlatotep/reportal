@@ -53,7 +53,7 @@
 
 
 <script>
-    let eventSource = new EventSource(`/launches-update`);
+    let eventSource = new EventSource('/launches-update/{{launches.projectId}}');
 
     eventSource.onmessage = function(e) {
         document.location.reload()
