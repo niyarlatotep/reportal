@@ -4,7 +4,7 @@ class Subscribes {
     private clients: {[key: string]: Response[]} = {};
     subscribe(res: Response, objectId: string){
 
-        console.log(`subscribe to ${objectId}`);
+        // console.log(`subscribe to ${objectId}`);
         res.writeHead(200, {
             'Content-Type': 'text/event-stream',
             'Cache-Control': 'no-cache',
@@ -12,21 +12,26 @@ class Subscribes {
         });
         res.write('\n');
         this.clients[objectId] ? this.clients[objectId].push(res) :  this.clients[objectId] = [res];
+        const currentObjectArray = this.clients[objectId];
         res.on('close', ()=>{
-            this.clients[objectId].splice(this.clients[objectId].indexOf(res), 1)
+            // console.log('before remove ================================== ');
+            // console.log(currentObjectArray);
+            currentObjectArray.splice(currentObjectArray.indexOf(res), 1);
+            // console.log('after remove ================================== ');
+            // console.log(currentObjectArray);
         });
     }
     publish(objectId){
         if (!this.clients[objectId]){
             //no subscribers yet
+            // console.log('no subscribers');
             return;
         }
-        console.log(`publish to ${objectId}`);
+        // console.log(`publish to ${objectId}`);
         for (const res of this.clients[objectId]){
-            res.write('\n\n');
+            res.write(`data: refresh client \n\n`)
         }
-        console.log(this.clients[objectId]);
-        this.clients[objectId] = [];
+        delete this.clients[objectId];
     }
 }
 

@@ -10,7 +10,6 @@ reportRouter.get('/report/:launchId', async (req, res) => {
     const launch = <Launch>await LaunchModel.findById(req.params.launchId);
     const resultsSorted: {launchId: string, specId: string, browsersResults: (ClientReport | string)[]}[] = [];
     for (const specReport in launch.specsReports){
-        console.log(resultsSorted);
         let sortedBrowserResults: (ClientReport | string)[] = [];
         for (const browser of launch.browsers){
             sortedBrowserResults.push(launch.specsReports[specReport][browser] || '')
