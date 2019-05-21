@@ -3,6 +3,7 @@ import {ClientReport, Launch, LaunchModel, SpecReport} from "../models/launch";
 import {ProjectModel} from "../models/project";
 import {Types} from "mongoose";
 import {subscribes} from "./subscribes";
+import {projectRouter} from "./project";
 
 const reportRouter = express.Router();
 
@@ -17,15 +18,21 @@ reportRouter.get('/report/:launchId', async (req, res) => {
         resultsSorted.push({launchId: launch.launchId, specId: specReport, browsersResults: sortedBrowserResults});
     }
     res.render('reports', {launch: { launchId: launch.launchId,
-            browsers: launch.browsers, specsReports: resultsSorted}});
+            browsers: launch.browsers, specsReports: resultsSorted, projectId: launch.projectId}});
 });
 
 reportRouter.get('/report-update/:launchId', async (req, res) =>{
+    console.log(req.params.launchId);
     subscribes.subscribe(res, req.params.launchId);
 });
 
 reportRouter.get('/launches-update/:projectId', async (req, res) =>{
     subscribes.subscribe(res, req.params.projectId);
+});
+
+projectRouter.delete('/launch/:dbLaunchId', async (req, res) => {
+    await LaunchModel.deleteOne({_id: req.params.dbLaunchId}).exec();
+    res.sendStatus(200);
 });
 
 reportRouter.post('/report', async (req, res) =>{
