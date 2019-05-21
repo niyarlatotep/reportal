@@ -1,0 +1,53 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express = require("express");
+const project_1 = require("../models/project");
+const launch_1 = require("../models/launch");
+const projectRouter = express.Router();
+exports.projectRouter = projectRouter;
+projectRouter.get('/projects', async (req, res) => {
+    const projects = await project_1.ProjectModel.find({}).exec();
+    res.render('projects', { projects: { list: projects } });
+});
+projectRouter.post('/project', async (req, res) => {
+    if (!req.body) {
+        return res.status(400).send('Request body is missing');
+    }
+    console.log(req.body);
+    const model = new project_1.ProjectModel(req.body);
+    console.log(model);
+    try {
+        const doc = await model.save();
+        res.sendStatus(200);
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).json(err);
+    }
+});
+projectRouter.delete('/project/:projectId', async (req, res) => {
+    await Promise.all([
+        launch_1.LaunchModel.deleteMany({ projectId: req.params.projectId }).exec(),
+        project_1.ProjectModel.findByIdAndDelete(req.params.projectId).exec()
+    ]);
+    res.sendStatus(200);
+});
+projectRouter.get('/project/:projectId', async (req, res) => {
+    const launches = await launch_1.LaunchModel.find({ projectId: req.params.projectId }).sort({ launchDate: -1 }).exec();
+    const project = await project_1.ProjectModel.findById(req.params.projectId).exec();
+    const localLaunches = [...launches];
+    //todo add typing and move to date converter
+    localLaunches.forEach(launch => {
+        const dateString = launch.launchDate.toLocaleDateString()
+            .split('-')
+            .reverse()
+            .map(str => {
+            return str.padStart(2, '0');
+        })
+            .join('.');
+        const timeString = launch.launchDate.toLocaleTimeString();
+        launch.launchDateLocal = [dateString, timeString].join(' ');
+    });
+    //todo move to reports
+    res.render('launches', { launches: { list: localLaunches, projectId: req.params.projectId, projectName: project.name } });
+});

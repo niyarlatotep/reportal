@@ -3,7 +3,7 @@ import {mongooseConnection} from "../lib/mongoos";
 
 type ClientReport = {
     browserName: string;
-    launchId: string;
+    launchName: string;
     projectId: string;
     specId: string;
     id: string;
@@ -28,7 +28,7 @@ type SpecReport = {
 
 class Launch extends Typegoose {
     @prop({required: true})
-    launchId: string;
+    launchName: string;
 
     @prop({required: true})
     projectId: string;

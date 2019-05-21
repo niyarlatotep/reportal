@@ -41,7 +41,7 @@ userAccountRouter.delete('/userAccount', async (req, res)=>{
     try {
         const doc = await UserAccountModel.findOneAndRemove({
             name: req.query.name
-        });
+        }).exec();
         res.json(doc)
     } catch (e) {
         res.status(500).json

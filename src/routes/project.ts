@@ -25,18 +25,17 @@ projectRouter.post('/project', async (req, res) => {
     }
 });
 
-projectRouter.delete('/project/:dbProjectId', async (req, res) => {
-    console.log(req.params.projectId);
+projectRouter.delete('/project/:projectId', async (req, res) => {
     await Promise.all([
         LaunchModel.deleteMany({projectId: req.params.projectId}).exec(),
-        ProjectModel.deleteOne({_id: req.params.dbProjectId}).exec()
+        ProjectModel.findByIdAndDelete(req.params.projectId).exec()
     ]);
     res.sendStatus(200);
 });
 
 projectRouter.get('/project/:projectId', async (req, res) => {
-    const launches: Launch[] = await LaunchModel.find({projectId: req.params.projectId}).sort({launchDate: -1});
-    const project = await ProjectModel.findOne({_id: req.params.projectId});
+    const launches: Launch[] = await LaunchModel.find({projectId: req.params.projectId}).sort({launchDate: -1}).exec();
+    const project = await ProjectModel.findById(req.params.projectId).exec();
     const localLaunches: any = [...launches];
     //todo add typing and move to date converter
     localLaunches.forEach(launch =>{
