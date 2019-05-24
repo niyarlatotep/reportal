@@ -7,7 +7,8 @@ import {projectRouter} from "./project";
 
 const reportRouter = express.Router();
 
-reportRouter.get('/report/:launchId', async (req, res) => {
+reportRouter.get('/report/:launchId', async (req, res) =>{
+    //todo add try catch
     const launch = await LaunchModel.findById(req.params.launchId).exec();
     const resultsSorted: {launchName: string, specId: string, browsersResults: (ClientReport | string)[]}[] = [];
     for (const specReport in launch.specsReports){
@@ -36,69 +37,39 @@ projectRouter.delete('/launch/:launchId', async (req, res) => {
 });
 
 reportRouter.post('/report', async (req, res) =>{
-
+    const requestBody: ClientReport = req.body;
     if (!req.body){
         return res.status(400).send('Request body is missing');
     }
-    const requestBody: ClientReport = req.body;
-    requestBody.utcStarted = new Date(requestBody.utcStarted);
-
 
     if (!Types.ObjectId.isValid(requestBody.projectId)){
         console.log('id is invalid');
         return res.sendStatus(400);
     }
 
-    const project = await ProjectModel.findById(requestBody.projectId).exec();
-    if (!project){
-        return res.sendStatus(404);
-    }
-
-    const launch = await LaunchModel.findOne({launchName: requestBody.launchName, projectId: requestBody.projectId}).exec();
-    if (!launch){
-        const launch = new LaunchModel({
-            launchName: requestBody.launchName,
-            projectId: requestBody.projectId,
-            launchDate: requestBody.utcStarted,
-            specsReports: {[requestBody.specId]: {[requestBody.browserName]: requestBody}},
-            browsers: [requestBody.browserName]
-        });
-        try {
-            await launch.save();
-            res.sendStatus(200);
-            subscribes.publish(requestBody.projectId);
-        } catch (err) {
-            console.error(err);
-            return res.status(500).json(err);
-        }
-    } else {
-        if (launch.specsReports[requestBody.specId]){
-            //if report exists
-            if (launch.specsReports[requestBody.specId][requestBody.browserName]){
-                //if such browser exists yet can't be duplicate
-                res.status(500).json('Browser name duplicate');
-                throw new Error('Browser name duplicate');
-            }
-            launch.specsReports[requestBody.specId][requestBody.browserName] = requestBody;
+    try {
+        const updateResult = await LaunchModel.findOneAndUpdate({projectId: requestBody.projectId, launchName: requestBody.launchName},
+            {
+                $setOnInsert: {
+                    launchDate: new Date(requestBody.utcStarted),
+                    projectId: requestBody.projectId,
+                    launchName: requestBody.launchName
+                },
+                [`specsReports.${requestBody.specId}.${requestBody.browserName}`]: requestBody,
+                $addToSet: {browsers: requestBody.browserName}
+            },
+            {upsert: true, rawResult: true}).exec();
+        if (updateResult){
+            //if fields updated
+            subscribes.publish(updateResult.value._id);
         } else {
-            launch.specsReports[requestBody.specId] = {[requestBody.browserName]: requestBody};
+            //if new launch added (new document)
+            subscribes.publish(requestBody.projectId);
         }
-        launch.markModified('specsReports');
-
-        if (!launch.browsers.includes(requestBody.browserName)){
-            launch.browsers.push(requestBody.browserName);
-            launch.markModified('browsers');
-        }
-
-        try {
-            await launch.save();
-            res.sendStatus(200);
-            console.log(`New spec results added`);
-            subscribes.publish(launch._id);
-        } catch (err) {
-            console.error(err);
-            return res.status(500).json(err);
-        }
+        res.sendStatus(200);
+    } catch (e) {
+        console.error(e);
+        return res.status(500).json(e);
     }
 });
 

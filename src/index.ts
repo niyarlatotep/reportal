@@ -15,6 +15,7 @@ import {projectRouter} from "./routes/project";
 import {logoutRouter} from "./routes/logout";
 import {mongooseConnection} from "./lib/mongoos";
 import {reportRouter} from "./routes/report";
+import {LaunchModel} from "./models/launch";
 
 const app = express();
 //todo make mongoose connectin helper
@@ -57,18 +58,11 @@ app.use((err, req, res, next)=>{
 });
 
 async function appInit() {
-    const admin = await UserAccountModel.findOne({name: 'admin'}).exec();
+    await UserAccountModel.findOneAndUpdate({name: 'admin'},
+        { $setOnInsert: new UserAccountModel({name: 'admin', password: 'admin'})}, {upsert: true}).exec();
+    await UserAccountModel.findOneAndUpdate({name: 'guest'},
+        { $setOnInsert: new UserAccountModel({name: 'guest', password: 'guest'})}, {upsert: true}).exec();
 
-    if (!admin){
-        console.log('Admin account creating');
-        const newAdmin = new UserAccountModel({name: 'admin', password: 'admin'});
-        await newAdmin.save();
-        console.log('Admin account created');
-        console.log('Guest account creating');
-        const guest = new UserAccountModel({name: 'guest', password: 'guest'});
-        await guest.save();
-        console.log('Guest account created');
-    }
     app.listen(appConfig.port, ()=> console.log(`Server has started on ${appConfig.port}`));
 }
 
