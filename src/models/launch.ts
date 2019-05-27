@@ -19,11 +19,12 @@ type ClientReport = {
     duration: number;
     browserVersion: string;
     platform: string;
-    suiteDirectory: string;
 }
 
 type SpecReport = {
     [key: string]: ClientReport
+} & {
+    specName: string
 }
 
 class Launch extends Typegoose {

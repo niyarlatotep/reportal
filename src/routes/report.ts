@@ -10,13 +10,13 @@ const reportRouter = express.Router();
 reportRouter.get('/report/:launchId', async (req, res) =>{
     //todo add try catch
     const launch = await LaunchModel.findById(req.params.launchId).exec();
-    const resultsSorted: {launchName: string, specId: string, browsersResults: (ClientReport | string)[]}[] = [];
+    const resultsSorted: {specName: string, launchName: string, specId: string, browsersResults: (ClientReport | string)[]}[] = [];
     for (const specReport in launch.specsReports){
         let sortedBrowserResults: (ClientReport | string)[] = [];
         for (const browser of launch.browsers){
             sortedBrowserResults.push(launch.specsReports[specReport][browser] || '')
         }
-        resultsSorted.push({launchName: launch.launchName, specId: specReport, browsersResults: sortedBrowserResults});
+        resultsSorted.push({specName: launch.specsReports[specReport].specName, launchName: launch.launchName, specId: specReport, browsersResults: sortedBrowserResults});
     }
     res.render('reports', {launch: { launchName: launch.launchName,
             browsers: launch.browsers, specsReports: resultsSorted, projectId: launch.projectId, launchId: launch._id}});
@@ -56,6 +56,7 @@ reportRouter.post('/report', async (req, res) =>{
                     launchName: requestBody.launchName
                 },
                 [`specsReports.${requestBody.specId}.${requestBody.browserName}`]: requestBody,
+                [`specsReports.${requestBody.specId}.specName`]: requestBody.description,
                 $addToSet: {browsers: requestBody.browserName}
             },
             {upsert: true, rawResult: true}).exec();

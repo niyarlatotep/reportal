@@ -1,21 +1,29 @@
 <link rel="stylesheet" href="/css/reports.css">
 <h4 style="text-align: center; margin-top: 20px; margin-bottom: 20px;">Tests results</h4>
 <div class="divTable">
-<table class="table table-bordered table-hover">
-    <thead style="background-color: rgba(0,0,0,.03);">
+<table class="table table-bordered table-hover table-striped">
+    <thead>
     <tr>
         <th>Spec name</th>
         {{#each launch.browsers}}
-            <th scope="col">{{this}}</th>
+            <th scope="col" style="text-transform: capitalize;">{{this}}</th>
         {{/each}}
     </tr>
     </thead>
     <tbody>
         {{#each launch.specsReports}}
             <tr>
-            <td scope="row">{{this.specId}}</td>
+            <td scope="row">{{this.specName}}</td>
             {{#each this.browsersResults}}
-                <td>{{this.browserName}}</td>
+                {{#if this.failedExpectations}}
+                    <td style="color: red; font-weight: 600;">&cross; Failed</td>
+                {{else}}
+                    {{#if this.pendingReason}}
+                        <td style="color: #7b6233; font-weight: 600;">&ndash; Ignored</td>
+                    {{else}}
+                        <td style="color: green; font-weight: 600;">&check; Passed</td>
+                    {{/if}}
+                {{/if}}
             {{/each}}
             </tr>
         {{/each}}
