@@ -32,3 +32,8 @@ html {
 .results-table {
     margin: 0;
 }
+
+.table-container {
+    margin-left: 150px;
+    margin-right: 150px;
+}
