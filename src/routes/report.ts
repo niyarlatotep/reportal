@@ -14,7 +14,12 @@ reportRouter.get('/report/:launchId', async (req, res) =>{
     for (const specReport in launch.specsReports){
         let sortedBrowserResults: (ClientReport | string)[] = [];
         for (const browser of launch.browsers){
-            sortedBrowserResults.push(launch.specsReports[specReport][browser] || '')
+            if (launch.specsReports[specReport][browser]){
+                launch.specsReports[specReport][browser].duration = Math.round(launch.specsReports[specReport][browser].duration);
+                sortedBrowserResults.push(launch.specsReports[specReport][browser])
+            } else {
+                sortedBrowserResults.push('')
+            }
         }
         resultsSorted.push({specName: launch.specsReports[specReport].specName, launchName: launch.launchName, specId: specReport, browsersResults: sortedBrowserResults});
     }

@@ -19,8 +19,17 @@ import {LaunchModel} from "./models/launch";
 
 const app = express();
 //todo make mongoose connectin helper
+function isEqualHelperHandlerbar(a, b, opts) {
+    if (a == b) {
+        return opts.fn(this)
+    } else {
+        return opts.inverse(this)
+    }
+}
 app.set('views', path.join(__dirname, 'views'));
-app.engine('handlebars', exhbs({defaultLayout: 'main'}));
+app.engine('handlebars', exhbs({defaultLayout: 'main', helpers : {
+        if_equal : isEqualHelperHandlerbar
+    }}));
 app.set('view engine', 'handlebars');
 
 app.use(bodyParser.json());

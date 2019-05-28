@@ -15,15 +15,18 @@
             <tr>
             <td scope="row">{{this.specName}}</td>
             {{#each this.browsersResults}}
-                {{#if this.failedExpectations}}
-                    <td style="color: red; font-weight: 600;">&cross; Failed</td>
-                {{else}}
-                    {{#if this.pendingReason}}
-                        <td style="color: #7b6233; font-weight: 600;">&ndash; Ignored</td>
-                    {{else}}
-                        <td style="color: green; font-weight: 600;">&check; Passed</td>
-                    {{/if}}
-                {{/if}}
+                {{#if_equal this.status "pending"}}
+                    <td style="color: #7b6233;">! Pending</td>
+                {{/if_equal}}
+                {{#if_equal this.status "passed"}}
+                    <td style="color: green;">&check; Passed ({{this.duration}}s)</td>
+                {{/if_equal}}
+                {{#if_equal this.status "failed"}}
+                    <td style="color: red;">&cross; Failed ({{this.duration}}s)</td>
+                {{/if_equal}}
+                {{#unless this.status }}
+                    <td></td>
+                {{/unless}}
             {{/each}}
             </tr>
         {{/each}}
