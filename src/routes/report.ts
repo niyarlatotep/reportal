@@ -15,7 +15,6 @@ reportRouter.get('/report/:launchId', async (req, res) =>{
         let sortedBrowserResults: (ClientReport | string)[] = [];
         for (const browser of launch.browsers){
             if (launch.specsReports[specReport][browser]){
-                console.log(launch.specsReports[specReport][browser].failedExpectations);
                 launch.specsReports[specReport][browser].duration = Math.round(launch.specsReports[specReport][browser].duration);
                 sortedBrowserResults.push(launch.specsReports[specReport][browser])
             } else {
