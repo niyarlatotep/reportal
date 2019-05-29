@@ -1,8 +1,12 @@
 
-.divTable {
+.div-table {
     margin-left: 150px;
     margin-right: 150px;
 }
 tr td:nth-child(3), tr td:nth-child(2){
     width: 150px;
+}
+
+table.table th, table.table td {
+    padding-left: 32px;
 }

@@ -48,10 +48,11 @@ reportRouter.post('/report', async (req, res) =>{
 });
 
 reportRouter.get('/report/:projectId/:launchId/:specId/:browserName', async (req, res) =>{
+    const launch = await LaunchModel.findOne({_id: req.params.launchId, projectId: req.params.projectId});
     console.log('='.repeat(100));    
-    console.log(req.params);
+    console.log(launch.specsReports[req.params.specId][req.params.browserName].failedExpectations);
     console.log('='.repeat(100));
-    res.render('fails', {fails: 'test'});
+    res.render('fails', {fails: {failedExpectations: launch.specsReports[req.params.specId][req.params.browserName].failedExpectations}});
 });
 
 export {

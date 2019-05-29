@@ -2,20 +2,16 @@
 {{#if projects.list}}
     <h4 style="text-align: center; margin-top: 20px; margin-bottom: 30px;">Projects</h4>
     {{else}}
-    <h4 style="text-align: center; margin-top: 20px; margin-bottom: 20px;">Add new project</h4>
+    <h4 style="text-align: center; margin-top: 20px; margin-bottom: 30px;">Add new project</h4>
 {{/if}}
 
-<div class="list-group" style="margin-left: auto; margin-right: auto; max-width: 900px; margin-top: 40px">
+<ul class="list-group" style="margin-left: auto; margin-right: auto; max-width: 900px;">
     {{#each projects.list}}
-        <a href="/project/{{this._id}}" class="list-group-item list-group-item-action">
-            <div class="d-flex w-100 justify-content-between">
-                <h5 class="mb-1">{{this.name}}</h5>
-                <p class="mb-1">Last run ...</p>
-            </div>
-            <p class="mb-1">{{this.description}}</p>
+        <a href="/project/{{this._id}}" class="list-group-item list-group-item-action" style="padding-left: 32px">
+            {{this.name}}
         </a>
     {{/each}}
-</div>
+</ul>
 
 <div class="modal fade" id="add-project" tabindex="-1" role="dialog" aria-labelledby="add-project-label" aria-hidden="true">
     <div class="modal-dialog" role="document">
