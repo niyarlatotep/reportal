@@ -28,18 +28,24 @@
             </nav>
 
             <nav class="my-2 my-md-0 mr-md-3">
-            <button type="button" class="btn btn-light" data-toggle="modal" data-target="#exampleModal">
-                <img class="" src="/assets/id.svg" alt="" width="20" height="20">
-                Project id
-            </button>
-        </nav>
+                <button type="button" class="btn btn-light" data-toggle="modal" data-target="#project-modal">
+                    <img class="" src="/assets/id.svg" alt="" width="20" height="20">
+                     Project info
+                </button>
+            </nav>
         {{/if}}
-        <!--todo rename to reports-->
-        {{#if launch}}
-            <h5 class="my-0 mr-md-auto font-weight-normal">Launch: {{launch.launchName}}</h5>
+
+        {{#if reports}}
+            <h5 class="my-0 mr-md-auto font-weight-normal">Launch: {{reports.launchName}}</h5>
             <nav class="my-2 my-md-0 mr-md-3">
                 <a class="p-2 text-dark" href="/projects">Projects</a>
-                <a class="p-2 text-dark" href="/project/{{launch.projectId}}">Launches</a>
+                <a class="p-2 text-dark" href="/project/{{reports.projectId}}">Launches</a>
+            </nav>
+            <nav class="my-2 my-md-0 mr-md-3">
+                <button type="button" class="btn btn-light" data-toggle="modal" data-target="#delete-launch">
+                    <img class="" src="/assets/id.svg" alt="" width="20" height="20">
+                    Delete launch
+                </button>
             </nav>
         {{/if}}
 

@@ -7,7 +7,7 @@ import {projectRouter} from "./project";
 
 const reportRouter = express.Router();
 
-reportRouter.get('/report/:launchId', async (req, res) =>{
+reportRouter.get('/launch/:launchId', async (req, res) =>{
     //todo add try catch
     const launch = await LaunchModel.findById(req.params.launchId).exec();
     const resultsSorted: {specName: string, launchName: string, specId: string, browsersResults: (ClientReport | string)[]}[] = [];
@@ -23,12 +23,11 @@ reportRouter.get('/report/:launchId', async (req, res) =>{
         }
         resultsSorted.push({specName: launch.specsReports[specReport].specName, launchName: launch.launchName, specId: specReport, browsersResults: sortedBrowserResults});
     }
-    res.render('reports', {launch: { launchName: launch.launchName,
+    res.render('reports', {reports: { launchName: launch.launchName,
             browsers: launch.browsers, specsReports: resultsSorted, projectId: launch.projectId, launchId: launch._id}});
 });
 
-reportRouter.get('/report-update/:launchId', async (req, res) =>{
-    console.log(req.params.launchId);
+reportRouter.get('/reports-update/:launchId', async (req, res) =>{
     subscribes.subscribe(res, req.params.launchId);
 });
 

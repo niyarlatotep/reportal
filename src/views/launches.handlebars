@@ -1,49 +1,14 @@
-<link href="/css/launches.css" rel="stylesheet">
-    <div class="modal fade" id="delete-launch" tabindex="-1" role="dialog" aria-labelledby="delete-launch-label" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="delete-launch-label">Delete launch</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    Launch reports will be deleted
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary delete-launch-button" onclick="deleteLaunch(this.value);">Delete launch</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
-  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-body" style="text-align: center">
-            <br>
-            <h6 class="modal-title" id="exampleModalLabel">Put this id in your reporter client config:</h6>
-            <br>
-          <p>{{launches.projectId}}</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-{{#unless launches.list}}
+{{#if launches.list}}
+    <h4 style="text-align: center; margin-top: 20px; margin-bottom: 30px;">Launches</h4>
+{{else}}
     <h4 style="text-align: center; margin-top: 20px; margin-bottom: 20px;">No tests launches</h4>
-{{/unless}}
+{{/if}}
 
-<h4 style="text-align: center; margin-top: 20px; margin-bottom: 30px;">Launches</h4>
 
 <div class="list-group" style="margin-left: auto; margin-right: auto; max-width: 900px;">
     {{#each launches.list}}
-        <a href="/report/{{this._id}}" class="list-group-item list-group-item-action" style="min-height: 80px; ">
+        <a href="/launch/{{this._id}}" class="list-group-item list-group-item-action">
             <div class="d-flex w-100 justify-content-between">
                 <h5 class="mb-1">Launch: {{this.launchName}}</h5>
                 <p class="mb-1">{{this.launchDateLocal}}</p>
@@ -55,26 +20,62 @@
     {{/each}}
 </div>
 
-<script>
-    $(document).on("click", '[data-target="#delete-launch"]', function () {
-        $('.delete-launch-button').val(this.value)
-    });
+<div class="modal fade" id="delete-project" tabindex="-1" role="dialog" aria-labelledby="delete-project-label" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="delete-project-label">Delete project</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                All project launches will be deleted
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary delete-project-button" value="{{launches.projectId}}" onclick="deleteProject(this.value);">
+                    Delete project
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
-    function deleteLaunch(launchId){
-        console.log(launchId);
-        $('#delete-launch').on('hidden.bs.modal', function(e) {
-            $('.delete-launch-button').val('');
-            document.location.reload()
+<div class="modal fade" id="project-modal" tabindex="-1" role="dialog" aria-labelledby="project-modal-label" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body" style="text-align: center">
+                <br>
+                <h6 class="modal-title" id="project-modalLabel">Put this id in your reporter client config:</h6>
+                <br>
+                <p>{{launches.projectId}}</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" data-toggle="modal" data-target="#delete-project">
+                    Delete project
+                </button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function deleteProject(projectId){
+        $('#delete-project').on('hidden.bs.modal', function(e) {
+            $('.delete-project-button').val('');
+            document.location.href= '/projects'
         });
 
         const xhr = new XMLHttpRequest();
-        xhr.open("DELETE", `/launch/${launchId}`, true);
+        xhr.open("DELETE", `/project/${projectId}`, true);
         xhr.onload = function (){
             if (xhr.status === 200){
-                $('#delete-launch').modal('hide');
+                $('#delete-project').modal('hide');
             } else {
                 console.error(xhr.status);
-                $('#delete-launch').modal('hide');
+                $('#delete-project').modal('hide');
             }
         };
         xhr.onerror = xhr.onabort = function (){
@@ -88,8 +89,4 @@
     eventSource.onmessage = function(e) {
         document.location.reload()
     };
-
-    function viewLaunch(launchId) {
-        window.location.href = `/report/${launchId}`;
-    }
 </script>

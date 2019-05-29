@@ -1,22 +1,22 @@
 <link rel="stylesheet" href="/css/reports.css">
 <h4 style="text-align: center; margin-top: 20px; margin-bottom: 20px;">Tests results</h4>
 <div class="divTable">
-<table class="table table-hover table-striped table-borderless">
+<table class="table table-hover table-striped ">
     <thead>
     <tr>
         <th>Spec name</th>
-        {{#each launch.browsers}}
+        {{#each reports.browsers}}
             <th scope="col" style="text-transform: capitalize;">{{this}}</th>
         {{/each}}
     </tr>
     </thead>
     <tbody>
-        {{#each launch.specsReports}}
+        {{#each reports.specsReports}}
             <tr>
             <td scope="row">{{this.specName}}</td>
             {{#each this.browsersResults}}
                 {{#if_equal this.status "pending"}}
-                    <td style="color: #7b6233;">! Pending</td>
+                    <td style="color: #7b6233;">! Ignored</td>
                 {{/if_equal}}
                 {{#if_equal this.status "passed"}}
                     <td style="color: green;">&check; Passed ({{this.duration}}s)</td>
@@ -34,9 +34,47 @@
 </table>
 </div>
 
+<div class="modal fade" id="delete-launch" tabindex="-1" role="dialog" aria-labelledby="delete-launch-label" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body" style="text-align: center">
+                <br>
+                <h6 class="modal-title" id="delete-launch-label">All launch reports will be deleted</h6>
+                <br>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary delete-project-button" value="{{reports.launchId}}" onclick="deleteLaunch(this.value);">
+                    Delete launch
+                </button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
-    console.log('script');
-    let eventSource = new EventSource('/report-update/{{launch.launchId}}');
+    function deleteLaunch(launchId){
+        $('#delete-launch').on('hidden.bs.modal', function(e) {
+            $('.delete-launch-button').val('');
+            document.location.href= '/project/{{reports.projectId}}'
+        });
+
+        const xhr = new XMLHttpRequest();
+        xhr.open("DELETE", `/launch/${launchId}`, true);
+        xhr.onload = function (){
+            if (xhr.status === 200){
+                $('#delete-launch').modal('hide');
+            } else {
+                console.error(xhr.status);
+                $('#delete-launch').modal('hide');
+            }
+        };
+        xhr.onerror = xhr.onabort = function (){
+            console.error('some error');
+        };
+        xhr.send();
+    }
+    let eventSource = new EventSource('/reports-update/{{launch.launchId}}');
 
     eventSource.onmessage = function(e) {
         document.location.reload()
