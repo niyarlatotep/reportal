@@ -1,5 +1,7 @@
 import {instanceMethod, prop, Typegoose, InstanceType, staticMethod, ModelType} from "typegoose";
 import {mongooseConnection} from "../lib/mongoos";
+import { Types } from "mongoose";
+import { ObjectID } from "mongodb";
 
 type ClientReport = {
     browserName: string;
@@ -24,7 +26,8 @@ type ClientReport = {
 type SpecReport = {
     [key: string]: ClientReport
 } & {
-    specName: string
+    specName: string,
+    specInternalId: ObjectID
 }
 
 class Launch extends Typegoose {

@@ -1,3 +1,4 @@
+import 'source-map-support/register'
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
@@ -15,7 +16,7 @@ import {projectRouter} from "./routes/project";
 import {logoutRouter} from "./routes/logout";
 import {mongooseConnection} from "./lib/mongoos";
 import {reportRouter} from "./routes/report";
-import {LaunchModel} from "./models/launch";
+import {launchRouter} from "./routes/launch";
 
 const app = express();
 //todo make mongoose connectin helper
@@ -26,7 +27,8 @@ function isEqualHelperHandlerbar(a, b, opts) {
         return opts.inverse(this)
     }
 }
-app.set('views', path.join(__dirname, 'views'));
+app.set('rootDirectory', path.join(__dirname, '..'));
+app.set('views', path.join('src','views'));
 app.engine('handlebars', exhbs({defaultLayout: 'main', helpers : {
         if_equal : isEqualHelperHandlerbar
     }}));
@@ -41,22 +43,14 @@ app.use(session({secret: sessionConfig.secret,
     saveUninitialized: true
 }));
 
-app.get('/about', (req, res)=>{
-    res.render('reports');
-});
-
-app.use((req, res, next)=>{
-    // console.log(`${new Date().toString()} => ${req.originalUrl}`, req.body);
-    next()
-});
-
-app.use(mainRouter);
-app.use(reportRouter);
-app.use(userAccountRouter);
 app.use(loginRouter);
 app.use(logoutRouter);
+app.use(mainRouter);
 app.use(projectRouter);
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(launchRouter);
+app.use(reportRouter);
+app.use(userAccountRouter);
+app.use(express.static(path.join(app.get('rootDirectory'), 'src', 'public')));
 
 app.use((req, res, next)=>{
     res.status(404).send('Path doesnt exist')

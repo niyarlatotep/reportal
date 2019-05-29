@@ -1,12 +1,12 @@
 import * as express from 'express';
 import * as path from "path";
-import {ProjectModel} from "../models/project";
 
 const mainRouter = express.Router();
 
 mainRouter.get('/', async (req, res, next) => {
+    console.log(__dirname);
     if (!req.session.user){
-        res.sendFile(path.join(__dirname, '../public/signin.html'));
+        res.sendFile(path.join(req.app.get('rootDirectory'), 'src', 'public/signin.html'));
     } else {
         res.redirect('/projects')
     }

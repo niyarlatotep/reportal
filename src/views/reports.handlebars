@@ -1,7 +1,7 @@
 <link rel="stylesheet" href="/css/reports.css">
 <h4 style="text-align: center; margin-top: 20px; margin-bottom: 20px;">Tests results</h4>
 <div class="divTable">
-<table class="table table-hover table-striped ">
+<table class="table table-hover table-striped table-bordered">
     <thead>
     <tr>
         <th>Spec name</th>
@@ -16,13 +16,19 @@
             <td scope="row">{{this.specName}}</td>
             {{#each this.browsersResults}}
                 {{#if_equal this.status "pending"}}
-                    <td style="color: #7b6233;">! Ignored</td>
+                    <td style="color: #7b6233;">! Ignored</td>                    
                 {{/if_equal}}
                 {{#if_equal this.status "passed"}}
-                    <td style="color: green;">&check; Passed ({{this.duration}}s)</td>
+                    <td>
+                        <a href="#" class="btn-link" style="color: green;">&check; Passed ({{this.duration}}s)</a>
+                    </td>
                 {{/if_equal}}
                 {{#if_equal this.status "failed"}}
-                    <td style="color: red;">&cross; Failed ({{this.duration}}s)</td>
+                    <td>                        
+                        <a href="/report/{{../../reports.projectId}}/{{../../reports.launchId}}/{{this.specId}}/{{this.browserName}}" class="btn-link" style="color: red;">
+                            &cross; Failed ({{this.duration}}s)
+                        </a>
+                    </td>
                 {{/if_equal}}
                 {{#unless this.status }}
                     <td></td>

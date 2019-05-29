@@ -1,43 +1,12 @@
 import * as express from 'express';
-import {ClientReport, Launch, LaunchModel, SpecReport} from "../models/launch";
-import {ProjectModel} from "../models/project";
-import {Types} from "mongoose";
-import {subscribes} from "./subscribes";
-import {projectRouter} from "./project";
+import {ClientReport, LaunchModel} from "../models/launch";
+import {Types, Mongoose} from "mongoose";
+import {subscribes} from "../lib/subscribes";
 
 const reportRouter = express.Router();
 
-reportRouter.get('/launch/:launchId', async (req, res) =>{
-    //todo add try catch
-    const launch = await LaunchModel.findById(req.params.launchId).exec();
-    const resultsSorted: {specName: string, launchName: string, specId: string, browsersResults: (ClientReport | string)[]}[] = [];
-    for (const specReport in launch.specsReports){
-        let sortedBrowserResults: (ClientReport | string)[] = [];
-        for (const browser of launch.browsers){
-            if (launch.specsReports[specReport][browser]){
-                launch.specsReports[specReport][browser].duration = Math.round(launch.specsReports[specReport][browser].duration);
-                sortedBrowserResults.push(launch.specsReports[specReport][browser])
-            } else {
-                sortedBrowserResults.push('')
-            }
-        }
-        resultsSorted.push({specName: launch.specsReports[specReport].specName, launchName: launch.launchName, specId: specReport, browsersResults: sortedBrowserResults});
-    }
-    res.render('reports', {reports: { launchName: launch.launchName,
-            browsers: launch.browsers, specsReports: resultsSorted, projectId: launch.projectId, launchId: launch._id}});
-});
-
 reportRouter.get('/reports-update/:launchId', async (req, res) =>{
     subscribes.subscribe(res, req.params.launchId);
-});
-
-reportRouter.get('/launches-update/:projectId', async (req, res) =>{
-    subscribes.subscribe(res, req.params.projectId);
-});
-
-projectRouter.delete('/launch/:launchId', async (req, res) => {
-    await LaunchModel.findByIdAndDelete(req.params.launchId).exec();
-    res.sendStatus(200);
 });
 
 reportRouter.post('/report', async (req, res) =>{
@@ -51,15 +20,15 @@ reportRouter.post('/report', async (req, res) =>{
         return res.sendStatus(400);
     }
 
-    try {
+    try {               
         const updateResult = await LaunchModel.findOneAndUpdate({projectId: requestBody.projectId, launchName: requestBody.launchName},
             {
                 $setOnInsert: {
                     launchDate: new Date(requestBody.utcStarted),
                     projectId: requestBody.projectId,
-                    launchName: requestBody.launchName
-                },
-                [`specsReports.${requestBody.specId}.${requestBody.browserName}`]: requestBody,
+                    launchName: requestBody.launchName                    
+                },            
+                [`specsReports.${requestBody.specId}.${requestBody.browserName}`]: requestBody,            
                 [`specsReports.${requestBody.specId}.specName`]: requestBody.description,
                 $addToSet: {browsers: requestBody.browserName}
             },
@@ -76,6 +45,13 @@ reportRouter.post('/report', async (req, res) =>{
         console.error(e);
         return res.status(500).json(e);
     }
+});
+
+reportRouter.get('/report/:projectId/:launchId/:specId/:browserName', async (req, res) =>{
+    console.log('='.repeat(100));    
+    console.log(req.params);
+    console.log('='.repeat(100));
+    res.render('fails', {fails: 'test'});
 });
 
 export {
