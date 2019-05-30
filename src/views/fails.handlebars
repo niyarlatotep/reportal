@@ -1,17 +1,20 @@
 <h4 style="text-align: center; margin-top: 20px; margin-bottom: 30px;">Failed expectations</h4>
 
-<ul class="list-group" style="margin-left: auto; margin-right: auto; max-width: 900px; margin-bottom: 20px">
-  {{#each fails.failedExpectations}}
-  <li class="list-group-item" style="background-color: #fff3cd;">
-    <button type="button" class="btn btn-link" data-toggle="collapse" data-target="#test{{@index}}" 
-    aria-expanded="true" aria-controls="test{{@index}}">
-      {{this.message}}
-    </button>
-    <div id="test{{@index}}" class="collapse" aria-labelledby="headingThree">
-      <div class="card-body">
-        <pre>{{this.stack}}</pre>        
-      </div>
-    </div>
-  </li>
-  {{/each}}
-</ul>
+<div id="accordionExample" style="margin-left: auto; margin-right: auto; max-width: 1000px; margin-bottom: 20px">
+    {{#each fails.failedExpectations}}
+        <div class="card">
+            <div class="card-header alert-danger" id="headingThree">
+                <h2 class="mb-0">
+                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#test{{@index}}">
+                        {{this.message}}
+                    </button>
+                </h2>
+            </div>
+            <div id="test{{@index}}" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+                <div class="card-body">
+                    <pre>{{this.stack}}</pre>
+                </div>
+            </div>
+        </div>
+    {{/each}}
+</div>

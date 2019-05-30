@@ -8,7 +8,7 @@
         {
             "name": "reportal",
             "type": "node",
-            "request": "launch",
+            "request": "launch",                
             "preLaunchTask": "tsc: watch - tsconfig.json",
             "program": "${workspaceFolder}/build/index.js"            
         }

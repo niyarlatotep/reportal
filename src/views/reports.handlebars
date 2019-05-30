@@ -19,9 +19,7 @@
                     <td style="color: #7b6233;">! Ignored</td>                    
                 {{/if_equal}}
                 {{#if_equal this.status "passed"}}
-                    <td>
-                        <a href="#" class="btn-link" style="color: green;">&check; Passed ({{this.duration}}s)</a>
-                    </td>
+                    <td style="color: green;">&check; Passed ({{this.duration}}s)</td>
                 {{/if_equal}}
                 {{#if_equal this.status "failed"}}
                     <td>                        
