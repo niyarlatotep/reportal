@@ -6,6 +6,7 @@ import {subscribes} from "../lib/subscribes";
 const reportRouter = express.Router();
 
 reportRouter.get('/reports-update/:launchId', async (req, res) =>{
+    console.log('subscribe to reports', req.params.launchId)
     subscribes.subscribe(res, req.params.launchId);
 });
 
@@ -35,9 +36,11 @@ reportRouter.post('/report', async (req, res) =>{
             {upsert: true, rawResult: true}).exec();
         if (updateResult){
             //if fields updated
+            console.log('fields updates', updateResult.value._id)
             subscribes.publish(updateResult.value._id);
         } else {
             //if new launch added (new document)
+            console.log('new launch update', requestBody.projectId)
             subscribes.publish(requestBody.projectId);
         }
         res.sendStatus(200);
@@ -50,7 +53,7 @@ reportRouter.post('/report', async (req, res) =>{
 reportRouter.get('/report/:projectId/:launchId/:specId/:browserName', async (req, res) =>{
     const launch = await LaunchModel.findOne({_id: req.params.launchId, projectId: req.params.projectId});
     res.render('fails', {fails: {failedExpectations: launch.specsReports[req.params.specId][req.params.browserName].failedExpectations, projectId: launch.projectId,
-        launchId: launch._id}});
+        launchId: launch._id, specName: launch.specsReports[req.params.specId][req.params.browserName].description}});
 });
 
 export {

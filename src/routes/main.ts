@@ -4,7 +4,6 @@ import * as path from "path";
 const mainRouter = express.Router();
 
 mainRouter.get('/', async (req, res, next) => {
-    console.log(__dirname);
     if (!req.session.user){
         res.sendFile(path.join(req.app.get('rootDirectory'), 'src', 'public/signin.html'));
     } else {

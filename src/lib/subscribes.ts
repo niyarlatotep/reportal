@@ -12,13 +12,10 @@ class Subscribes {
         });
         res.write('\n');
         this.clients[objectId] ? this.clients[objectId].push(res) :  this.clients[objectId] = [res];
-        const currentObjectArray = this.clients[objectId];
+        const currentObjectArray = this.clients[objectId];    
         res.on('close', ()=>{
-            // console.log('before remove ================================== ');
-            // console.log(currentObjectArray);
-            currentObjectArray.splice(currentObjectArray.indexOf(res), 1);
-            // console.log('after remove ================================== ');
-            // console.log(currentObjectArray);
+            console.log('subscriber removed', objectId);            
+            currentObjectArray.splice(currentObjectArray.indexOf(res), 1);            
         });
     }
     publish(objectId){

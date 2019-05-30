@@ -78,7 +78,7 @@
         };
         xhr.send();
     }
-    let eventSource = new EventSource('/reports-update/{{launch.launchId}}');
+    let eventSource = new EventSource('/reports-update/{{reports.launchId}}');
 
     eventSource.onmessage = function(e) {
         document.location.reload()
