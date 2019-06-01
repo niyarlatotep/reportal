@@ -33,7 +33,6 @@ app.engine('handlebars', exhbs({defaultLayout: 'main', helpers : {
         if_equal : isEqualHelperHandlerbar
     }}));
 app.set('view engine', 'handlebars');
-
 app.use(bodyParser.json());
 app.use(cookieParser());
 const MongoStore = connectMongo(session);
@@ -63,6 +62,7 @@ app.use((err, req, res, next)=>{
 async function appInit() {
     await UserAccountModel.findOneAndUpdate({name: 'admin'},
         { $setOnInsert: new UserAccountModel({name: 'admin', password: 'admin'})}, {upsert: true}).exec();
+
     await UserAccountModel.findOneAndUpdate({name: 'guest'},
         { $setOnInsert: new UserAccountModel({name: 'guest', password: 'guest'})}, {upsert: true}).exec();
 

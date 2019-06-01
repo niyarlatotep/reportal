@@ -2,11 +2,14 @@ import * as express from 'express';
 import {ClientReport, LaunchModel} from "../models/launch";
 import {Types, Mongoose} from "mongoose";
 import {subscribes} from "../lib/subscribes";
+import * as formidableMiddleware from "express-formidable";
+import {promises} from "fs";
 
 const reportRouter = express.Router();
 
+
 reportRouter.get('/reports-update/:launchId', async (req, res) =>{
-    console.log('subscribe to reports', req.params.launchId)
+    // console.log('subscribe to reports', req.params.launchId)
     subscribes.subscribe(res, req.params.launchId);
 });
 
@@ -54,6 +57,16 @@ reportRouter.get('/report/:projectId/:launchId/:specId/:browserName', async (req
     const launch = await LaunchModel.findOne({_id: req.params.launchId, projectId: req.params.projectId});
     res.render('fails', {fails: {failedExpectations: launch.specsReports[req.params.specId][req.params.browserName].failedExpectations, projectId: launch.projectId,
         launchId: launch._id, specName: launch.specsReports[req.params.specId][req.params.browserName].description}});
+});
+// reportRouter.use(formidableMiddleware());
+
+reportRouter.post('/report-screen', formidableMiddleware(), async (req, res)=>{
+    console.log('lsjdflksjflksdjflksdfjl')
+    // console.log(req)
+    console.log(req.fields)
+    console.log(req.files)
+    await promises.writeFile('C:/testScreen/testScreen.png', req.fields.screen, 'base64')
+
 });
 
 export {

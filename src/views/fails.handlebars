@@ -1,11 +1,11 @@
 <h4 style="text-align: center; margin-top: 20px; margin-bottom: 30px;">Failed expectations</h4>
 
-<div id="accordionExample" style="margin-left: auto; margin-right: auto; max-width: 1000px; margin-bottom: 20px">
+<div id="accordionExample" style="margin-left: auto; margin-right: auto; max-width: 1000px; margin-bottom: 20px;">
     {{#each fails.failedExpectations}}
         <div class="card">
             <div class="card-header alert-danger" id="headingThree">
                 <h2 class="mb-0">
-                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#test{{@index}}">
+                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#test{{@index}}" style=" text-align: left; word-break: break-all;">
                         {{this.message}}
                     </button>
                 </h2>

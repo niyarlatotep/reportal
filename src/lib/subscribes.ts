@@ -4,7 +4,7 @@ class Subscribes {
     private clients: {[key: string]: Response[]} = {};
     subscribe(res: Response, objectId: string){
 
-        console.log(`subscribe to ${objectId}`);
+        // console.log(`subscribe to ${objectId}`);
         res.writeHead(200, {
             'Content-Type': 'text/event-stream',
             'Cache-Control': 'no-cache',

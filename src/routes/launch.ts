@@ -31,7 +31,7 @@ projectRouter.delete('/launch/:launchId', async (req, res) => {
 });
 
 launchRouter.get('/launches-update/:projectId', async (req, res) =>{
-    console.log('subscribe to launches', req.params.projectId)
+    // console.log('subscribe to launches', req.params.projectId)
     subscribes.subscribe(res, req.params.projectId);
 });
 
