@@ -59,14 +59,18 @@ app.use((err, req, res, next)=>{
     res.status(500).send('Server error');
 });
 
-async function appInit() {
-    await UserAccountModel.findOneAndUpdate({name: 'admin'},
+async function appInit() {    
+    UserAccountModel.findOneAndUpdate({name: 'admin'},
         { $setOnInsert: new UserAccountModel({name: 'admin', password: 'admin'})}, {upsert: true}).exec();
 
-    await UserAccountModel.findOneAndUpdate({name: 'guest'},
+    UserAccountModel.findOneAndUpdate({name: 'guest'},
         { $setOnInsert: new UserAccountModel({name: 'guest', password: 'guest'})}, {upsert: true}).exec();
 
-    app.listen(appConfig.port, ()=> console.log(`Server has started on ${appConfig.port}`));
+    app.listen(appConfig.port, 
+        ()=> {
+            console.log(`Server has started on ${appConfig.port}`)
+        }
+    );
 }
 
 appInit();

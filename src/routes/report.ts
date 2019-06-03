@@ -4,6 +4,7 @@ import {Types, Mongoose} from "mongoose";
 import {subscribes} from "../lib/subscribes";
 import * as formidableMiddleware from "express-formidable";
 import {promises} from "fs";
+import { ReportImageModel } from '../models/reportImage';
 
 const reportRouter = express.Router();
 
@@ -63,10 +64,14 @@ reportRouter.get('/report/:projectId/:launchId/:specId/:browserName', async (req
 reportRouter.post('/report-screen', formidableMiddleware(), async (req, res)=>{
     console.log('lsjdflksjflksdjflksdfjl')
     // console.log(req)
-    console.log(req.fields)
-    console.log(req.files)
-    await promises.writeFile('C:/testScreen/testScreen.png', req.fields.screen, 'base64')
+    // console.log(req.fields)
+    // console.log(req.fields.screen)
 
+    const reportImage = new ReportImageModel({img: {data: Buffer.from(<string>req.fields.screen, 'base64'), 
+    contentType: 'image/png'}});
+
+    //todo add try catch
+    await reportImage.save();
 });
 
 export {
