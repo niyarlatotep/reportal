@@ -4,11 +4,15 @@ import {mongooseConnection} from "../lib/mongoos";
 
 class ReportImage extends Typegoose {
     @prop({required: true})
-    img: { data: Buffer, contentType: String }
+    img: InstanceType<Buffer>;
+
+    @prop({required: true})
+    launchName: string;
 }
 
 const ReportImageModel = new ReportImage().getModelForClass(ReportImage, {existingConnection: mongooseConnection.reportal});
 
 export {
-    ReportImageModel
+    ReportImageModel,
+    ReportImage
 }

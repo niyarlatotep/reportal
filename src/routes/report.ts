@@ -5,12 +5,13 @@ import {subscribes} from "../lib/subscribes";
 import * as formidableMiddleware from "express-formidable";
 import {promises} from "fs";
 import { ReportImageModel } from '../models/reportImage';
+import {ProjectModel} from "../models/project";
 
 const reportRouter = express.Router();
 
 
 reportRouter.get('/reports-update/:launchId', async (req, res) =>{
-    // console.log('subscribe to reports', req.params.launchId)
+    console.log('subscribe to reports', req.params.launchId)
     subscribes.subscribe(res, req.params.launchId);
 });
 
@@ -23,6 +24,11 @@ reportRouter.post('/report', async (req, res) =>{
     if (!Types.ObjectId.isValid(requestBody.projectId)){
         console.log('id is invalid');
         return res.sendStatus(400);
+    }
+
+    const project = await ProjectModel.findById(requestBody.projectId);
+    if(!project){
+        return res.sendStatus(404).json(`Project doesn't exist`);
     }
 
     try {               
@@ -40,11 +46,11 @@ reportRouter.post('/report', async (req, res) =>{
             {upsert: true, rawResult: true}).exec();
         if (updateResult){
             //if fields updated
-            console.log('fields updates', updateResult.value._id)
+            console.log('fields updates', updateResult.value._id);
             subscribes.publish(updateResult.value._id);
         } else {
             //if new launch added (new document)
-            console.log('new launch update', requestBody.projectId)
+            console.log('new launch update', requestBody.projectId);
             subscribes.publish(requestBody.projectId);
         }
         res.sendStatus(200);
@@ -57,18 +63,20 @@ reportRouter.post('/report', async (req, res) =>{
 reportRouter.get('/report/:projectId/:launchId/:specId/:browserName', async (req, res) =>{
     const launch = await LaunchModel.findOne({_id: req.params.launchId, projectId: req.params.projectId});
     res.render('fails', {fails: {failedExpectations: launch.specsReports[req.params.specId][req.params.browserName].failedExpectations, projectId: launch.projectId,
-        launchId: launch._id, specName: launch.specsReports[req.params.specId][req.params.browserName].description}});
+        launchId: launch._id, specName: launch.specsReports[req.params.specId][req.params.browserName].description, screenId: launch.specsReports[req.params.specId][req.params.browserName].screenId}});
 });
 // reportRouter.use(formidableMiddleware());
 
-reportRouter.post('/report-screen/:screenId', formidableMiddleware(), async (req, res)=>{
+reportRouter.post('/report-screen/:launchName/:screenId', formidableMiddleware(), async (req, res)=>{
+    //todo check if project exists add project field and delete when project deleting!
     if (!Types.ObjectId.isValid(req.params.screenId)){
         console.log('id is invalid');
         return res.sendStatus(400);
     }
+    console.log(req.params.launchName);
 
-    const reportImage = new ReportImageModel({_id: req.params.screenId, img: {data: Buffer.from(<string>req.fields.screen, 'base64'),
-    contentType: 'image/png'}});
+    const reportImage = new ReportImageModel({_id: req.params.screenId, launchName: req.params.launchName,
+        img: Buffer.from(<string>req.fields.screen, 'base64')});
 
     try{
         await reportImage.save();
@@ -77,6 +85,15 @@ reportRouter.post('/report-screen/:screenId', formidableMiddleware(), async (req
         console.error(e);
         res.status(500).json(e);
     }
+});
+
+reportRouter.get('/report-screen/:screenId', async (req, res)=>{
+    const reportImage = await ReportImageModel.findById(req.params.screenId);
+    res.writeHead(200, {
+        'Content-Type': 'image/png',
+        'Content-Length': reportImage.img.buffer.byteLength
+    });
+    res.end(reportImage.img.buffer);
 });
 
 export {

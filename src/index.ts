@@ -62,10 +62,12 @@ app.use((err, req, res, next)=>{
 function appInit() {
     //todo add error catch
     UserAccountModel.findOneAndUpdate({name: 'admin'},
-        { $setOnInsert: new UserAccountModel({name: 'admin', password: 'admin'})}, {upsert: true}).exec();
+        { $setOnInsert: new UserAccountModel({name: 'admin', password: 'admin'})}, {upsert: true}).exec()
+        .catch(error => console.error(error));
 
     UserAccountModel.findOneAndUpdate({name: 'guest'},
-        { $setOnInsert: new UserAccountModel({name: 'guest', password: 'guest'})}, {upsert: true}).exec();
+        { $setOnInsert: new UserAccountModel({name: 'guest', password: 'guest'})}, {upsert: true}).exec()
+        .catch(error => console.error(error));
 
     app.listen(appConfig.port, 
         ()=> {

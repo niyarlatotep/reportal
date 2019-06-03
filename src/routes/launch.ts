@@ -2,6 +2,7 @@ import * as express from 'express';
 import {ClientReport, LaunchModel} from "../models/launch";
 import {subscribes} from "../lib/subscribes";
 import {projectRouter} from "./project";
+import {ReportImageModel} from "../models/reportImage";
 
 const launchRouter = express.Router();
 
@@ -26,12 +27,13 @@ launchRouter.get('/launch/:launchId', async (req, res) =>{
 });
 
 projectRouter.delete('/launch/:launchId', async (req, res) => {
-    await LaunchModel.findByIdAndDelete(req.params.launchId).exec();
+    const launch = await LaunchModel.findByIdAndDelete(req.params.launchId).exec();
+    await ReportImageModel.deleteMany({launchName: launch.launchName});
     res.sendStatus(200);
 });
 
 launchRouter.get('/launches-update/:projectId', async (req, res) =>{
-    // console.log('subscribe to launches', req.params.projectId)
+    console.log('subscribe to launches', req.params.projectId);
     subscribes.subscribe(res, req.params.projectId);
 });
 
