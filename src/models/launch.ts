@@ -21,6 +21,7 @@ type ClientReport = {
     duration: number;
     browserVersion: string;
     platform: string;
+    screenId: string;
 }
 
 type SpecReport = {

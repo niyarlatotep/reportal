@@ -61,17 +61,22 @@ reportRouter.get('/report/:projectId/:launchId/:specId/:browserName', async (req
 });
 // reportRouter.use(formidableMiddleware());
 
-reportRouter.post('/report-screen', formidableMiddleware(), async (req, res)=>{
-    console.log('lsjdflksjflksdjflksdfjl')
-    // console.log(req)
-    // console.log(req.fields)
-    // console.log(req.fields.screen)
+reportRouter.post('/report-screen/:screenId', formidableMiddleware(), async (req, res)=>{
+    if (!Types.ObjectId.isValid(req.params.screenId)){
+        console.log('id is invalid');
+        return res.sendStatus(400);
+    }
 
-    const reportImage = new ReportImageModel({img: {data: Buffer.from(<string>req.fields.screen, 'base64'), 
+    const reportImage = new ReportImageModel({_id: req.params.screenId, img: {data: Buffer.from(<string>req.fields.screen, 'base64'),
     contentType: 'image/png'}});
 
-    //todo add try catch
-    await reportImage.save();
+    try{
+        await reportImage.save();
+        res.sendStatus(200);
+    } catch (e) {
+        console.error(e);
+        res.status(500).json(e);
+    }
 });
 
 export {

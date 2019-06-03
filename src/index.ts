@@ -59,7 +59,8 @@ app.use((err, req, res, next)=>{
     res.status(500).send('Server error');
 });
 
-async function appInit() {    
+function appInit() {
+    //todo add error catch
     UserAccountModel.findOneAndUpdate({name: 'admin'},
         { $setOnInsert: new UserAccountModel({name: 'admin', password: 'admin'})}, {upsert: true}).exec();
 
