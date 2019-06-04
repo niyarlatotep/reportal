@@ -22,14 +22,26 @@
                     <td style="color: #7b6233;">! Ignored</td>                    
                 {{/if_equal}}
                 {{#if_equal this.status "passed"}}
-                    <td style="color: green;">&check; Passed ({{this.duration}}s)</td>
+                    {{#if this.screenId}}
+                        <td>
+                            <a href="/passes/{{../../reports.projectId}}/{{../../reports.launchId}}/{{this.specId}}/{{this.browserName}}" class="btn-link" style="color: green;">
+                                &check; Passed ({{this.duration}}s)
+                            </a>
+                        </td>
+                        {{else}}
+                        <td style="color: green;">&check; Passed ({{this.duration}}s)</td>
+                    {{/if}}
                 {{/if_equal}}
                 {{#if_equal this.status "failed"}}
-                    <td>                        
-                        <a href="/report/{{../../reports.projectId}}/{{../../reports.launchId}}/{{this.specId}}/{{this.browserName}}" class="btn-link" style="color: red;">
-                            &cross; Failed ({{this.duration}}s)
-                        </a>
-                    </td>
+                    {{#if this.screenId}}
+                            <td>
+                                <a href="/fails/{{../../reports.projectId}}/{{../../reports.launchId}}/{{this.specId}}/{{this.browserName}}" class="btn-link" style="color: red;">
+                                    &cross; Failed ({{this.duration}}s)
+                                </a>
+                            </td>
+                    {{else}}
+                            <td style="color: red;">&cross; Failed ({{this.duration}}s)</td>
+                    {{/if}}
                 {{/if_equal}}
                 {{#unless this.status }}
                     <td></td>

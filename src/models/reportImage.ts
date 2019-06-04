@@ -8,6 +8,11 @@ class ReportImage extends Typegoose {
 
     @prop({required: true})
     launchName: string;
+
+    @prop({required: true})
+    projectId: string;
+
+
 }
 
 const ReportImageModel = new ReportImage().getModelForClass(ReportImage, {existingConnection: mongooseConnection.reportal});

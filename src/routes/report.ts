@@ -60,23 +60,31 @@ reportRouter.post('/report', async (req, res) =>{
     }
 });
 
-reportRouter.get('/report/:projectId/:launchId/:specId/:browserName', async (req, res) =>{
+//todo move to fails and passes route
+reportRouter.get('/fails/:projectId/:launchId/:specId/:browserName', async (req, res) =>{
     const launch = await LaunchModel.findOne({_id: req.params.launchId, projectId: req.params.projectId});
     res.render('fails', {fails: {failedExpectations: launch.specsReports[req.params.specId][req.params.browserName].failedExpectations, projectId: launch.projectId,
-        launchId: launch._id, specName: launch.specsReports[req.params.specId][req.params.browserName].description, screenId: launch.specsReports[req.params.specId][req.params.browserName].screenId}});
+            launchId: launch._id, specName: launch.specsReports[req.params.specId][req.params.browserName].description, screenId: launch.specsReports[req.params.specId][req.params.browserName].screenId}});
 });
-// reportRouter.use(formidableMiddleware());
 
-reportRouter.post('/report-screen/:launchName/:screenId', formidableMiddleware(), async (req, res)=>{
-    //todo check if project exists add project field and delete when project deleting!
-    if (!Types.ObjectId.isValid(req.params.screenId)){
+reportRouter.get('/passes/:projectId/:launchId/:specId/:browserName', async (req, res) =>{
+    const launch = await LaunchModel.findOne({_id: req.params.launchId, projectId: req.params.projectId});
+    res.render('passes', {passes: {screenId: launch.specsReports[req.params.specId][req.params.browserName].screenId, specName: launch.specsReports[req.params.specId][req.params.browserName].description,
+            projectId: launch.projectId, launchId: launch._id}});
+});
+
+reportRouter.post('/report-screen', formidableMiddleware(), async (req, res)=>{
+    if (!Types.ObjectId.isValid(<string>req.fields.projectId)){
         console.log('id is invalid');
         return res.sendStatus(400);
     }
-    console.log(req.params.launchName);
+    const project = await ProjectModel.findById(req.fields.projectId);
+    if(!project){
+        return res.sendStatus(404).json(`Project doesn't exist`);
+    }
 
-    const reportImage = new ReportImageModel({_id: req.params.screenId, launchName: req.params.launchName,
-        img: Buffer.from(<string>req.fields.screen, 'base64')});
+    const reportImage = new ReportImageModel({_id: req.fields.screenId, launchName: req.fields.launchName,
+        projectId: req.fields.projectId, img: Buffer.from(<string>req.fields.screen, 'base64')});
 
     try{
         await reportImage.save();

@@ -1,6 +1,7 @@
 import * as express from 'express';
 import {ProjectModel} from "../models/project";
 import {Launch, LaunchModel} from "../models/launch";
+import {ReportImageModel} from "../models/reportImage";
 
 const projectRouter = express.Router();
 
@@ -28,7 +29,8 @@ projectRouter.post('/project', async (req, res) => {
 projectRouter.delete('/project/:projectId', async (req, res) => {
     await Promise.all([
         LaunchModel.deleteMany({projectId: req.params.projectId}).exec(),
-        ProjectModel.findByIdAndDelete(req.params.projectId).exec()
+        ProjectModel.findByIdAndDelete(req.params.projectId).exec(),
+        ReportImageModel.deleteMany({projectId: req.params.projectId})
     ]);
     res.sendStatus(200);
 });
