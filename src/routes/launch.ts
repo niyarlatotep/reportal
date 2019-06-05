@@ -22,6 +22,7 @@ launchRouter.get('/launch/:launchId', async (req, res) =>{
         }
         resultsSorted.push({specName: launch.specsReports[specReport].specName, launchName: launch.launchName, specId: specReport, browsersResults: sortedBrowserResults});
     }
+
     res.render('reports', {reports: { launchName: launch.launchName,
             browsers: launch.browsers, specsReports: resultsSorted, projectId: launch.projectId, launchId: launch._id}});
 });

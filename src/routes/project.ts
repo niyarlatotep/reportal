@@ -7,17 +7,24 @@ import en from 'javascript-time-ago/locale/en'
 
 const projectRouter = express.Router();
 
+// _id
+// name
+// lastLaunchDateAgo
+
 projectRouter.get('/projects', async (req, res) => {
-    const projects = await ProjectModel.find({}).exec();
-    const localProjects: any = [...projects];
     TimeAgo.addLocale(en);
     const timeAgo = new TimeAgo('en-US');
-    for (let project of localProjects){
-        if (project.lastLaunchDate){
-            project.lastLaunchDateAgo = timeAgo.format(project.lastLaunchDate.getTime());
+
+    const projects = await ProjectModel.find({}).exec();
+    const localProjects = projects.map(project =>{
+        return {
+            _id: project._id,
+            name: project.name,
+            lastLaunchDateAgo: project.lastLaunchDate && timeAgo.format(project.lastLaunchDate.getTime())
         }
-    }
-    res.render('projects', {projects: {list:  projects}});
+    });
+
+    res.render('projects', {projects: {list:  localProjects}});
 });
 
 projectRouter.post('/project', async (req, res)=>{
@@ -46,11 +53,10 @@ projectRouter.delete('/project/:projectId', async (req, res) => {
 });
 
 projectRouter.get('/project/:projectId', async (req, res) => {
-    const launches: Launch[] = await LaunchModel.find({projectId: req.params.projectId}).sort({launchDate: -1}).exec();
+    const launches = await LaunchModel.find({projectId: req.params.projectId}).sort({launchDate: -1}).exec();
     const project = await ProjectModel.findById(req.params.projectId).exec();
-    const localLaunches: any = [...launches];
-    //todo add typing and move to date converter
-    localLaunches.forEach(launch =>{
+
+    const localLaunches = launches.map(launch =>{
         const dateString =  launch.launchDate.toLocaleDateString()
             .split('-')
             .reverse()
@@ -58,12 +64,15 @@ projectRouter.get('/project/:projectId', async (req, res) => {
                 return str.padStart(2, '0');
             })
             .join('.');
-
         const timeString = launch.launchDate.toLocaleTimeString();
-        launch.launchDateLocal = [dateString, timeString].join(' ');
+
+        return {
+            _id : launch._id,
+            launchName: launch.launchName,
+            launchDateLocal: [dateString, timeString].join(' ')
+        };
     });
 
-    //todo move to reports
     res.render('launches', {launches: {list:  localLaunches, projectId: req.params.projectId, projectName: project.name}});
 });
 
