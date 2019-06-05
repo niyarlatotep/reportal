@@ -1,11 +1,11 @@
 import 'source-map-support/register'
-import * as express from 'express';
-import * as bodyParser from 'body-parser';
-import * as cookieParser from 'cookie-parser';
-import * as session from 'express-session';
-import * as connectMongo from 'connect-mongo'
-import * as path from "path";
-import * as exhbs from 'express-handlebars';
+import express from 'express';
+import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
+import session from 'express-session';
+import connectMongo from 'connect-mongo'
+import path from "path";
+import exhbs from 'express-handlebars';
 
 import {appConfig, sessionConfig} from "./appConfig";
 import {userAccountRouter} from "./routes/userAccount";

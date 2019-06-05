@@ -7,6 +7,9 @@ class Project extends Typegoose {
 
     @prop()
     description: string;
+
+    @prop()
+    lastLaunchDate: Date;
 }
 
 const ProjectModel = new Project().getModelForClass(Project, {existingConnection: mongooseConnection.reportal});

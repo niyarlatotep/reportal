@@ -1,4 +1,4 @@
-import * as express from 'express';
+import express from 'express';
 import {ClientReport, LaunchModel} from "../models/launch";
 import {subscribes} from "../lib/subscribes";
 import {projectRouter} from "./project";

@@ -1,4 +1,4 @@
-import * as bcrypt from "bcryptjs";
+import bcrypt from "bcryptjs";
 import {instanceMethod, prop, Typegoose, InstanceType, staticMethod, ModelType} from "typegoose";
 import {mongooseConnection} from "../lib/mongoos";
 

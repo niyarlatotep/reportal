@@ -1,4 +1,4 @@
-import * as http from 'http';
+import http from 'http';
 
 class HttpError extends Error{
     constructor(public status, public message){

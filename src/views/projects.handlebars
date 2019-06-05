@@ -7,8 +7,13 @@
 
 <ul class="list-group" style="margin-left: auto; margin-right: auto; max-width: 900px;">
     {{#each projects.list}}
-        <a href="/project/{{this._id}}" class="list-group-item list-group-item-action" style="padding-left: 32px">
-            {{this.name}}
+        <a href="/project/{{this._id}}" class="list-group-item list-group-item-action" style="padding-left: 32px; padding-right: 32px;">
+            <div class="d-flex w-100 justify-content-between">
+                <span>{{this.name}}</span>
+                {{#if this.lastLaunchDateAgo}}
+                    <span class="text-muted">Last launch {{this.lastLaunchDateAgo}}</span>
+                {{/if}}
+            </div>
         </a>
     {{/each}}
 </ul>

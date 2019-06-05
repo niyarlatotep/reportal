@@ -1,9 +1,8 @@
-import * as express from 'express';
+import express from 'express';
 import {ClientReport, LaunchModel} from "../models/launch";
 import {Types, Mongoose} from "mongoose";
 import {subscribes} from "../lib/subscribes";
-import * as formidableMiddleware from "express-formidable";
-import {promises} from "fs";
+import formidableMiddleware from "express-formidable";
 import { ReportImageModel } from '../models/reportImage';
 import {ProjectModel} from "../models/project";
 
@@ -11,7 +10,7 @@ const reportRouter = express.Router();
 
 
 reportRouter.get('/reports-update/:launchId', async (req, res) =>{
-    console.log('subscribe to reports', req.params.launchId)
+    console.log('subscribe to reports', req.params.launchId);
     subscribes.subscribe(res, req.params.launchId);
 });
 
@@ -31,7 +30,8 @@ reportRouter.post('/report', async (req, res) =>{
         return res.sendStatus(404).json(`Project doesn't exist`);
     }
 
-    try {               
+    try {
+
         const updateResult = await LaunchModel.findOneAndUpdate({projectId: requestBody.projectId, launchName: requestBody.launchName},
             {
                 $setOnInsert: {
@@ -52,6 +52,10 @@ reportRouter.post('/report', async (req, res) =>{
             //if new launch added (new document)
             console.log('new launch update', requestBody.projectId);
             subscribes.publish(requestBody.projectId);
+            ProjectModel.findOneAndUpdate({_id: requestBody.projectId}, {lastLaunchDate: new Date(requestBody.utcStarted)},
+                {upsert: true})
+                .exec()
+                .catch(err => console.error(err));
         }
         res.sendStatus(200);
     } catch (e) {

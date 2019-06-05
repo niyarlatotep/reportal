@@ -1,16 +1,26 @@
-import * as express from 'express';
+import express from 'express';
 import {ProjectModel} from "../models/project";
 import {Launch, LaunchModel} from "../models/launch";
 import {ReportImageModel} from "../models/reportImage";
+import TimeAgo from 'javascript-time-ago'
+import en from 'javascript-time-ago/locale/en'
 
 const projectRouter = express.Router();
 
 projectRouter.get('/projects', async (req, res) => {
     const projects = await ProjectModel.find({}).exec();
+    const localProjects: any = [...projects];
+    TimeAgo.addLocale(en);
+    const timeAgo = new TimeAgo('en-US');
+    for (let project of localProjects){
+        if (project.lastLaunchDate){
+            project.lastLaunchDateAgo = timeAgo.format(project.lastLaunchDate.getTime());
+        }
+    }
     res.render('projects', {projects: {list:  projects}});
 });
 
-projectRouter.post('/project', async (req, res) => {
+projectRouter.post('/project', async (req, res)=>{
     if (!req.body){
         return res.status(400).send('Request body is missing');
     }
@@ -52,6 +62,7 @@ projectRouter.get('/project/:projectId', async (req, res) => {
         const timeString = launch.launchDate.toLocaleTimeString();
         launch.launchDateLocal = [dateString, timeString].join(' ');
     });
+
     //todo move to reports
     res.render('launches', {launches: {list:  localLaunches, projectId: req.params.projectId, projectName: project.name}});
 });

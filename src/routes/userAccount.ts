@@ -1,5 +1,5 @@
 import {UserAccountModel} from "../models/userAccount";
-import * as express from 'express';
+import express from 'express';
 
 const userAccountRouter = express.Router();
 
