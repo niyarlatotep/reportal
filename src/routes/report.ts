@@ -29,15 +29,23 @@ reportRouter.post('/report', async (req, res) =>{
     if(!project){
         return res.sendStatus(404).json(`Project doesn't exist`);
     }
+    if (requestBody.failedExpectations.length){
+        //if it's not a new launch, we should set the flag only if there is any fails in the current spec
+        ProjectModel.findOneAndUpdate({_id: requestBody.projectId}, {isLastLaunchFailed: true}).exec()
+            .then(project =>{
+                //todo push to subscribers
+                subscribes.publish('projects');
+            })
+    }
 
     try {
-
         const updateResult = await LaunchModel.findOneAndUpdate({projectId: requestBody.projectId, launchName: requestBody.launchName},
             {
                 $setOnInsert: {
                     launchDate: new Date(requestBody.utcStarted),
                     projectId: requestBody.projectId,
-                    launchName: requestBody.launchName                    
+                    launchName: requestBody.launchName,
+                    appVersions: requestBody.appVersions
                 },            
                 [`specsReports.${requestBody.specId}.${requestBody.browserName}`]: requestBody,            
                 [`specsReports.${requestBody.specId}.specName`]: requestBody.description,
@@ -50,11 +58,15 @@ reportRouter.post('/report', async (req, res) =>{
             subscribes.publish(updateResult.value._id);
         } else {
             //if new launch added (new document)
-            console.log('new launch update', requestBody.projectId);
+            let isLastLaunchFailed;
+            requestBody.failedExpectations.length? isLastLaunchFailed = true: isLastLaunchFailed = false;
+
             subscribes.publish(requestBody.projectId);
-            ProjectModel.findOneAndUpdate({_id: requestBody.projectId}, {lastLaunchDate: new Date(requestBody.utcStarted)},
+            ProjectModel.findOneAndUpdate({_id: requestBody.projectId}, {lastLaunchDate: new Date(requestBody.utcStarted),
+                    isLastLaunchFailed: isLastLaunchFailed},
                 {upsert: true})
                 .exec()
+                .then(project=>{ subscribes.publish('projects') })
                 .catch(err => console.error(err));
         }
         res.sendStatus(200);
@@ -78,21 +90,25 @@ reportRouter.get('/passes/:projectId/:launchId/:specId/:browserName', async (req
 });
 
 reportRouter.post('/report-screen', formidableMiddleware(), async (req, res)=>{
+    console.log('screenshot reporting try');
     if (!Types.ObjectId.isValid(<string>req.fields.projectId)){
         console.log('id is invalid');
         return res.sendStatus(400);
     }
     const project = await ProjectModel.findById(req.fields.projectId);
     if(!project){
+        console.log(`Project doesn't exist`);
         return res.sendStatus(404).json(`Project doesn't exist`);
     }
 
     const reportImage = new ReportImageModel({_id: req.fields.screenId, launchName: req.fields.launchName,
         projectId: req.fields.projectId, img: Buffer.from(<string>req.fields.screen, 'base64')});
 
+    console.log('screenshot reporting');
     try{
         await reportImage.save();
         res.sendStatus(200);
+        console.log('screenshot reported');
     } catch (e) {
         console.error(e);
         res.status(500).json(e);

@@ -1,0 +1,18 @@
+.div-table {
+    margin-left: 250px;
+    margin-right: 250px;
+    margin-top: 50px;
+}
+
+tr td:last-child, tr th:last-child{
+    width: 150px;
+}
+
+tr td:first-child, tr th:first-child{
+    padding-left: 30px;
+}
+
+.reports tr td:nth-child(n+2), .reports tr th:nth-child(n+2){
+    width: 150px;
+}
+

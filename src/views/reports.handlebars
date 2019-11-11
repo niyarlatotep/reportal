@@ -1,10 +1,7 @@
-<script>
+<link rel="stylesheet" href="/css/table.css">
 
-</script>
-<link rel="stylesheet" href="/css/reports.css">
-<h4 style="text-align: center; margin-top: 20px; margin-bottom: 30px;">Tests results</h4>
 <div class="div-table">
-<table class="table table-hover table-striped table-bordered">
+<table class="table table-hover table-striped table-bordered reports">
     <thead>
     <tr>
         <th>Spec name</th>
@@ -19,7 +16,10 @@
             <td scope="row">{{this.specName}}</td>
             {{#each this.browsersResults}}
                 {{#if_equal this.status "pending"}}
-                    <td style="color: #7b6233;">! Ignored</td>                    
+                    <td style="color: #7b6233;">! Ignored</td>
+                {{/if_equal}}
+                {{#if_equal this.status "disabled"}}
+                    <td style="color: #7b6233;">! Ignored</td>
                 {{/if_equal}}
                 {{#if_equal this.status "passed"}}
                     {{#if this.screenId}}

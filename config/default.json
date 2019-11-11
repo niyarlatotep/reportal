@@ -1,12 +1,9 @@
 {
     "app": {
-        "port": 3000
+        "port": 80
     },
     "reportal": {
         "uri": "mongodb://localhost/reportal"
-    },
-    "reports": {
-        "uri": "mongodb://localhost/reports"
     },
     "session": {
         "secret" : "TheBestOfTheBestOfTheBest"

@@ -22,6 +22,7 @@ type ClientReport = {
     browserVersion: string;
     platform: string;
     screenId: string;
+    appVersions: string[];
 }
 
 type SpecReport = {
@@ -46,6 +47,9 @@ class Launch extends Typegoose {
 
     @prop({required: true})
     browsers: string[];
+
+    @prop()
+    appVersions: string[];
 }
 
 const LaunchModel = new Launch().getModelForClass(Launch, {existingConnection: mongooseConnection.reportal});

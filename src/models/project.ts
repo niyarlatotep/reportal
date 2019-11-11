@@ -9,6 +9,9 @@ class Project extends Typegoose {
     description: string;
 
     @prop()
+    isLastLaunchFailed: boolean;
+
+    @prop()
     lastLaunchDate: Date;
 }
 

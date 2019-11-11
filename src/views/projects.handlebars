@@ -1,22 +1,49 @@
+<link rel="stylesheet" href="/css/table.css">
 
-{{#if projects.list}}
-    <h4 style="text-align: center; margin-top: 20px; margin-bottom: 30px;">Projects</h4>
-    {{else}}
-    <h4 style="text-align: center; margin-top: 20px; margin-bottom: 30px;">Add new project</h4>
-{{/if}}
+<div class="div-table">
+    <table class="table table-hover table-striped">
+        <thead>
+        <tr>
+            <th>Project</th>
+            <th>Last launch</th>
+            <th>Last status</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#each projects.list}}
+            <tr>
+                <td>
+                    <a href="/project/{{this._id}}">
+                        <div style="font-weight: bold">{{this.name}}</div>
+                    </a>
+                </td>
+                <td>
+                    {{#if this.lastLaunchDateAgo}}
+                        <span class="text-muted">{{this.lastLaunchDateAgo}}</span>
+                        {{else}}
+                        <div>No launches</div>
+                    {{/if}}
+                </td>
+                <td>
+                    {{#if this.lastLaunchDateAgo}}
+                            {{#if this.isLastLaunchFailed}}
+                                <div style="color: red;">Failed</div>
+                            {{else}}
+                                <div style="color: green">Passed</div>
+                            {{/if}}
+                        {{else}}
+                        <div></div>
+                    {{/if}}
+                </td>
+            </tr>
+        {{/each}}
+        </tbody>
+    </table>
+</div>
 
-<ul class="list-group" style="margin-left: auto; margin-right: auto; max-width: 900px;">
-    {{#each projects.list}}
-        <a href="/project/{{this._id}}" class="list-group-item list-group-item-action" style="padding-left: 32px; padding-right: 32px;">
-            <div class="d-flex w-100 justify-content-between">
-                <span>{{this.name}}</span>
-                {{#if this.lastLaunchDateAgo}}
-                    <span class="text-muted">Last launch {{this.lastLaunchDateAgo}}</span>
-                {{/if}}
-            </div>
-        </a>
-    {{/each}}
-</ul>
+{{#unless projects.list}}
+    <div style="font-weight: bold; text-align: center; margin-top: 20px; margin-bottom: 30px;">Add new project</div>
+{{/unless}}
 
 <div class="modal fade" id="add-project" tabindex="-1" role="dialog" aria-labelledby="add-project-label" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -77,4 +104,10 @@
         const addProjectForm = document.forms.new_project;
         xhr.send(JSON.stringify({name: addProjectForm.elements.project_name.value, description: addProjectForm.elements.project_description.value}));
     }
+
+    let eventSource = new EventSource('/launches-update/projects');
+
+    eventSource.onmessage = function(e) {
+        document.location.reload()
+    };
 </script>
