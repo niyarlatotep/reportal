@@ -15,10 +15,12 @@
         {{#if projects}}
             <h5 class="my-0 mr-md-auto font-weight-normal">Reportal</h5>
             <nav class="my-2 my-md-0 mr-md-3">
+            {{#if isAdmin}}
                 <button type="button" class="btn btn-light" data-toggle="modal" data-target="#add-project">
                     <img class=""src="assets/add-item.svg" alt="" width="20" height="20">
                     Add new project
                 </button>
+            {{/if}}
             </nav>
         {{/if}}
 
@@ -29,10 +31,12 @@
             </nav>
 
             <nav class="my-2 my-md-0 mr-md-3">
+            {{#if isAdmin}}
                 <button type="button" class="btn btn-light" data-toggle="modal" data-target="#project-modal">
                     <img class="" src="/assets/id.svg" alt="" width="20" height="20">
                      Project info
                 </button>
+            {{/if}}
             </nav>
         {{/if}}
 
@@ -43,10 +47,12 @@
                 <a class="p-2 text-dark" href="/project/{{reports.projectId}}">Launches</a>
             </nav>
             <nav class="my-2 my-md-0 mr-md-3">
+            {{#if isAdmin}}
                 <button type="button" class="btn btn-light" data-toggle="modal" data-target="#delete-launch">
                     <img class="" src="/assets/id.svg" alt="" width="20" height="20">
                     Delete launch
                 </button>
+            {{/if}}
             </nav>
         {{/if}}
 

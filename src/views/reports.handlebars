@@ -6,7 +6,7 @@
     <tr>
         <th>Spec name</th>
         {{#each reports.browsers}}
-            <th scope="col" style="text-transform: capitalize;">{{this}}</th>
+            <th scope="col" style="text-transform: capitalize;">{{this.browserName}} <br> {{this.browserVersion}}</th>
         {{/each}}
     </tr>
     </thead>

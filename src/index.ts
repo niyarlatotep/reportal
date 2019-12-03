@@ -8,7 +8,6 @@ import path from "path";
 import exhbs from 'express-handlebars';
 
 import {appConfig, sessionConfig} from "./appConfig";
-import {userAccountRouter} from "./routes/userAccount";
 import {UserAccountModel} from "./models/userAccount";
 import {loginRouter} from "./routes/login";
 import {mainRouter} from "./routes/main";
@@ -17,6 +16,7 @@ import {logoutRouter} from "./routes/logout";
 import {mongooseConnection} from "./lib/mongoos";
 import {reportRouter} from "./routes/report";
 import {launchRouter} from "./routes/launch";
+import {changePasswordRouter} from "./routes/changePass";
 
 const app = express();
 //todo make mongoose connectin helper
@@ -41,14 +41,13 @@ app.use(session({secret: sessionConfig.secret,
     resave: true,
     saveUninitialized: true
 }));
-
 app.use(loginRouter);
 app.use(logoutRouter);
 app.use(mainRouter);
 app.use(projectRouter);
 app.use(launchRouter);
 app.use(reportRouter);
-app.use(userAccountRouter);
+app.use(changePasswordRouter);
 app.use(express.static(path.join(app.get('rootDirectory'), 'src', 'public')));
 
 app.use((req, res, next)=>{

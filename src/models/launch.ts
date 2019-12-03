@@ -48,6 +48,9 @@ class Launch extends Typegoose {
     @prop({required: true})
     browsers: string[];
 
+    @prop({required: true})
+    isFailsExist: boolean;
+
     @prop()
     appVersions: string[];
 }

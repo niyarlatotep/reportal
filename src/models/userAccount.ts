@@ -35,6 +35,16 @@ class UserAccount extends Typegoose {
             return null;
         }
     };
+
+    @staticMethod
+    static async getUserById(this: ModelType<UserAccount> & typeof UserAccount, id: string) {
+        const foundUserAccount = await this.findById(id).exec();
+        if (foundUserAccount){
+            return foundUserAccount;
+        } else {
+            return null;
+        }
+    };
 }
 
 const UserAccountModel = new UserAccount().getModelForClass(UserAccount, {existingConnection: mongooseConnection.reportal});

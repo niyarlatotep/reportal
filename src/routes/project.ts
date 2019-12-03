@@ -6,30 +6,30 @@ import TimeAgo from 'javascript-time-ago'
 import en from 'javascript-time-ago/locale/en'
 import humanizeDuration from 'humanize-duration'
 import {subscribes} from "../lib/subscribes";
-import {launchRouter} from "./launch";
+import {authorizationCheck, isAdmin, onlyAdminAllowed} from "../lib/authorizationCheck";
 
 const projectRouter = express.Router();
 
-projectRouter.get('/launches-update/projects', async (req, res) =>{
+projectRouter.get('/launches-update/projects', authorizationCheck, async (req, res) =>{
     console.log('subscribe to launches', 'projects');
     subscribes.subscribe(res, 'projects');
 });
 
-projectRouter.get('/projects', async (req, res) => {
+projectRouter.get('/projects', authorizationCheck, async (req, res) => {
     TimeAgo.addLocale(en);
     const timeAgo = new TimeAgo('en-US');
-
     const projects = await ProjectModel.find({}).exec();
-    const localProjects = projects.map(project =>{
-        return {
+    const projectsListForUi = [];
+    for (let project of projects){
+        const lastLaunch = await LaunchModel.findOne({projectId: project.id}).sort({launchDate: -1}).exec();
+        projectsListForUi.push({
             _id: project._id,
             name: project.name,
-            isLastLaunchFailed: project.isLastLaunchFailed,
-            lastLaunchDateAgo: project.lastLaunchDate && timeAgo.format(project.lastLaunchDate.getTime()),
-        }
-    });
-
-    res.render('projects', {projects: {list:  localProjects}});
+            isLastLaunchFailed: lastLaunch ? lastLaunch.isFailsExist : false,
+            lastLaunchDateAgo: lastLaunch ? timeAgo.format(lastLaunch.launchDate) : null
+        });
+    }
+    res.render('projects', {projects: {list:  projectsListForUi}, isAdmin: isAdmin(req)});
 });
 
 projectRouter.post('/project', async (req, res)=>{
@@ -49,7 +49,7 @@ projectRouter.post('/project', async (req, res)=>{
     }
 });
 
-projectRouter.delete('/project/:projectId', async (req, res) => {
+projectRouter.delete('/project/:projectId', onlyAdminAllowed, async (req, res) => {
     await Promise.all([
         LaunchModel.deleteMany({projectId: req.params.projectId}).exec(),
         ProjectModel.findByIdAndDelete(req.params.projectId).exec(),
@@ -59,11 +59,11 @@ projectRouter.delete('/project/:projectId', async (req, res) => {
 
 });
 
-projectRouter.get('/project/:projectId', async (req, res) => {
+projectRouter.get('/project/:projectId', authorizationCheck, async (req, res) => {
     try {
         const launches = await LaunchModel.find({projectId: req.params.projectId}).sort({launchDate: -1}).exec();
         const project = await ProjectModel.findById(req.params.projectId).exec();
-        const localLaunches = launches.map(launch =>{
+        const launchesForUI = launches.map(launch =>{
             let statusCount = {};
             let duration = 0;
             for (let specReport in launch.specsReports){
@@ -95,7 +95,7 @@ projectRouter.get('/project/:projectId', async (req, res) => {
             };
         });
 
-        res.render('launches', {launches: {list:  localLaunches, projectId: req.params.projectId, projectName: project.name}});
+        res.render('launches', {launches: {list:  launchesForUI, projectId: req.params.projectId, projectName: project.name}, isAdmin: isAdmin(req)});
     } catch (e) {
         console.error(e);
     }
