@@ -59,6 +59,15 @@ projectRouter.delete('/project/:projectId', onlyAdminAllowed, async (req, res) =
 
 });
 
+projectRouter.delete('/project/cleanUp/:projectId', onlyAdminAllowed, async (req, res) => {
+    await Promise.all([
+        LaunchModel.deleteMany({projectId: req.params.projectId}),
+        ReportImageModel.deleteMany({projectId: req.params.projectId})
+    ]);
+    res.sendStatus(200);
+});
+
+
 projectRouter.get('/project/:projectId', authorizationCheck, async (req, res) => {
     try {
         const launches = await LaunchModel.find({projectId: req.params.projectId}).sort({launchDate: -1}).exec();
