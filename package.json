@@ -13,7 +13,7 @@
     "@types/express-formidable": "^1.0.3",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
-    "config": "^3.0.1",
+    "config": "^3.3.8",
     "connect-mongo": "^2.0.3",
     "cookie-parser": "^1.4.4",
     "express": "^4.16.4",
